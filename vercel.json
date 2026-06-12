@@ -1,0 +1,9 @@
+{
+  "buildCommand": null,
+  "outputDirectory": ".",
+  "routes": [
+    { "src": "/", "dest": "/index-final.html" },
+    { "src": "/lesson", "dest": "/lesson-final.html" },
+    { "src": "/(.*)", "dest": "/$1" }
+  ]
+}
