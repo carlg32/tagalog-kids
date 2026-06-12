@@ -48,54 +48,62 @@
     </div>
 
     <script>
+        // Get lesson ID from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const lessonId = urlParams.get('id') || 'g1_l01';
+
         // Lesson Data (embedded for prototype)
-        const lessonData = {
-            id: 'g1_l01',
-            title: 'Mga Pagbati (Greetings)',
-            description: 'Learn how to greet people in Tagalog!',
-            vocabulary: [
-                { word: 'kumusta', translation: 'how are you / hello', audio: '🔊' },
-                { word: 'magandang umaga', translation: 'good morning', audio: '🔊' },
-                { word: 'paalam', translation: 'goodbye', audio: '🔊' }
-            ],
-            activities: [
-                {
-                    id: 'vocab_intro',
-                    type: 'vocabulary_intro',
-                    title: '📚 Learn New Words',
-                    instruction: 'Listen to the audio and repeat the words!'
-                },
-                {
-                    id: 'matching',
-                    type: 'matching_game',
-                    title: '🎯 Matching Game',
-                    instruction: 'Drag the Tagalog word to the correct image!',
-                    pairs: [
-                        { word: 'kumusta', emoji: '👋' },
-                        { word: 'magandang umaga', emoji: '🌅' },
-                        { word: 'paalam', emoji: '👋' }
-                    ]
-                },
-                {
-                    id: 'quiz',
-                    type: 'multiple_choice',
-                    title: '🧠 Quiz Time!',
-                    instruction: 'Choose the correct answer!',
-                    questions: [
-                        {
-                            question: 'What does "kumusta" mean?',
-                            choices: ['Good morning', 'How are you / Hello', 'Goodbye'],
-                            correct: 'How are you / Hello'
-                        },
-                        {
-                            question: 'How do you say "good morning" in Tagalog?',
-                            choices: ['kumusta', 'magandang umaga', 'paalam'],
-                            correct: 'magandang umaga'
-                        }
-                    ]
-                }
-            ]
+        const lessonDatabase = {
+            'g1_l01': {
+                id: 'g1_l01',
+                title: 'Mga Pagbati (Greetings)',
+                description: 'Learn how to greet people in Tagalog!',
+                vocabulary: [
+                    { word: 'kumusta', translation: 'how are you / hello', audio: '🔊' },
+                    { word: 'magandang umaga', translation: 'good morning', audio: '🔊' },
+                    { word: 'paalam', translation: 'goodbye', audio: '🔊' }
+                ],
+                activities: [
+                    {
+                        id: 'vocab_intro',
+                        type: 'vocabulary_intro',
+                        title: '📚 Learn New Words',
+                        instruction: 'Listen to the audio and repeat the words!'
+                    },
+                    {
+                        id: 'matching',
+                        type: 'matching_game',
+                        title: '🎯 Matching Game',
+                        instruction: 'Drag the Tagalog word to the correct image!',
+                        pairs: [
+                            { word: 'kumusta', emoji: '👋' },
+                            { word: 'magandang umaga', emoji: '🌅' },
+                            { word: 'paalam', emoji: '👋' }
+                        ]
+                    },
+                    {
+                        id: 'quiz',
+                        type: 'multiple_choice',
+                        title: '🧠 Quiz Time!',
+                        instruction: 'Choose the correct answer!',
+                        questions: [
+                            {
+                                question: 'What does "kumusta" mean?',
+                                choices: ['Good morning', 'How are you / Hello', 'Goodbye'],
+                                correct: 'How are you / Hello'
+                            },
+                            {
+                                question: 'How do you say "good morning" in Tagalog?',
+                                choices: ['kumusta', 'magandang umaga', 'paalam'],
+                                correct: 'magandang umaga'
+                            }
+                        ]
+                    }
+                ]
+            }
         };
+
+        const lessonData = lessonDatabase[lessonId] || lessonDatabase['g1_l01'];
 
         let currentActivity = 0;
         let score = 0;
