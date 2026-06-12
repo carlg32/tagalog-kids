@@ -48,9 +48,14 @@
     </div>
 
     <script>
+        // DEBUG: Log to console
+        console.log('Lesson page loaded!');
+        console.log('URL:', window.location.search);
+
         // Get lesson ID from URL parameter
         const urlParams = new URLSearchParams(window.location.search);
         const lessonId = urlParams.get('id') || 'g1_l01';
+        console.log('Lesson ID:', lessonId);
 
         // Lesson Data (embedded for prototype)
         const lessonDatabase = {
