@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Page - Tagalog Kids</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .btn { background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Page</h1>
+        <p>If you can see this, JavaScript is working!</p>
+        <button class="btn" onclick="testClick()">Click Me to Test</button>
+        <p id="output"></p>
+    </div>
+
+    <script>
+        console.log('Test page loaded!');
+        alert('JavaScript is working!');
+
+        function testClick() {
+            document.getElementById('output').innerHTML = '✅ Button clicked! JavaScript works!';
+        }
+
+        // Check URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const lessonId = urlParams.get('id');
+        console.log('URL parameter id:', lessonId);
+    </script>
+</body>
+</html>
