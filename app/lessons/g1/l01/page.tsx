@@ -29,7 +29,7 @@ export default function LessonPage() {
           <div key={activity.id} className={index === currentActivity ? 'block' : 'hidden'}>
             <ActivityComponent 
               activity={activity} 
-              onComplete={(points) => {
+              onComplete={(points: number) => {
                 setScore(score + points);
                 setTotalQuestions(totalQuestions + 1);
                 if (index < lessonData.activities.length - 1) {
