@@ -63,12 +63,10 @@
 
     <script>
         // =====================================================================
-        // JAVASCRIPT - SYNTAX VERIFIED (no missing { errors)
+        // JAVASCRIPT - PRODUCTION VERSION (no alerts)
         // =====================================================================
         
-        alert("✅ JavaScript is running! lesson-final.html loaded.");
-        
-        // Lesson database (same as before)
+        // Lesson database
         const lessonDatabase = {
             "g1_l01": {
                 id: "g1_l01",
@@ -101,24 +99,17 @@
         // =====================================================================
         
         function initLesson() {
-            alert("🚀 initLesson() called!");
-            
             // Get lesson ID from URL
             const urlParams = new URLSearchParams(window.location.search);
             const lessonId = urlParams.get("id");
             
-            alert("📝 Lesson ID from URL: " + lessonId);
-            
             if (!lessonId || !lessonDatabase[lessonId]) {
-                alert("❌ Invalid lesson ID: " + lessonId);
                 document.getElementById("lesson-title").textContent = "Error: Lesson not found";
                 return;
             }
             
             // Load lesson
             currentLesson = lessonDatabase[lessonId];
-            
-            alert("✅ Lesson loaded: " + currentLesson.title);
             
             // Update UI
             document.getElementById("lesson-title").textContent = currentLesson.title;
@@ -133,8 +124,6 @@
         // =====================================================================
         
         function showActivity(index) {
-            alert("🎯 showActivity(" + index + ")");
-            
             // Hide all activities
             const sections = document.querySelectorAll(".activity-section");
             sections.forEach(function(section) {
@@ -147,9 +136,6 @@
             
             if (section) {
                 section.classList.add("active");
-                alert("✅ Showing activity: " + activityName);
-            } else {
-                alert("❌ Activity section not found: activity-" + activityName);
             }
             
             // Update progress bar
@@ -165,10 +151,8 @@
         }
         
         function nextActivity() {
-            alert("➡️ nextActivity() called");
             currentActivity++;
             if (currentActivity >= activities.length) {
-                alert("🏁 Lesson complete!");
                 finishLesson();
             } else {
                 showActivity(currentActivity);
@@ -180,13 +164,10 @@
         // =====================================================================
         
         function loadVocabulary() {
-            alert("🔊 loadVocabulary() called");
-            
             const list = document.getElementById("vocabulary-list");
             list.innerHTML = "";
             
             if (!currentLesson || !currentLesson.vocabulary) {
-                alert("❌ No vocabulary data!");
                 return;
             }
             
@@ -202,13 +183,11 @@
                 
                 list.appendChild(item);
             });
-            
-            alert("✅ Vocabulary loaded: " + currentLesson.vocabulary.length + " words");
         }
         
         function playAudio(word) {
-            alert("🔊 Playing audio for: " + word);
             // TODO: Actually play audio file
+            console.log("Playing audio for: " + word);
         }
         
         // =====================================================================
@@ -216,22 +195,17 @@
         // =====================================================================
         
         function loadQuiz() {
-            alert("📝 loadQuiz() called");
             currentQuizIndex = 0;
             score = 0;
             loadQuizQuestion();
         }
         
         function loadQuizQuestion() {
-            alert("❓ loadQuizQuestion() - index: " + currentQuizIndex);
-            
             if (!currentLesson || !currentLesson.quiz) {
-                alert("❌ No quiz data!");
                 return;
             }
             
             if (currentQuizIndex >= currentLesson.quiz.length) {
-                alert("🏁 Quiz complete! Score: " + score + "/" + currentLesson.quiz.length);
                 nextActivity();
                 return;
             }
@@ -258,15 +232,10 @@
             // Hide feedback
             document.getElementById("quiz-feedback").classList.add("hidden");
             document.getElementById("next-quiz-btn").classList.add("hidden");
-            
-            alert("✅ Quiz question loaded: " + question.question);
         }
         
         function checkAnswer(selectedIndex) {
-            alert("✔️ checkAnswer(" + selectedIndex + ") called");
-            
             if (!currentLesson || !currentLesson.quiz) {
-                alert("❌ No quiz data!");
                 return;
             }
             
@@ -281,11 +250,9 @@
                 feedback.className = "feedback correct";
                 feedback.innerHTML = "✅ <strong>Correct!</strong>";
                 score++;
-                alert("✅ Correct! Score: " + score);
             } else {
                 feedback.className = "feedback incorrect";
                 feedback.innerHTML = "❌ <strong>Incorrect.</strong> The correct answer is: " + question.options[question.correct];
-                alert("❌ Incorrect. Correct answer: " + question.options[question.correct]);
             }
             
             // Show next button
@@ -293,7 +260,6 @@
         }
         
         function nextQuizQuestion() {
-            alert("➡️ nextQuizQuestion() called");
             currentQuizIndex++;
             loadQuizQuestion();
         }
@@ -303,20 +269,16 @@
         // =====================================================================
         
         function finishLesson() {
-            alert("🎉 finishLesson() called! Final score: " + score + "/" + (currentLesson ? currentLesson.quiz.length : 0));
-            
             // TODO: Save progress to localStorage or backend
             
-            // Redirect to dashboard
-            alert("↩️ Redirecting to dashboard...");
-            window.location.href = "index-fixed.html";
+            // Redirect to dashboard (FIXED: index.html instead of index-fixed.html)
+            window.location.href = "index.html";
         }
         
         // =====================================================================
         // START LESSON
         // =====================================================================
         
-        alert("🚀 STARTING: Calling initLesson()...");
         initLesson();
         
     </script>

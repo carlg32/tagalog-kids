@@ -78,24 +78,19 @@
 
     <script>
         // =====================================================================
-        // JAVASCRIPT - SYNTAX VERIFIED
+        // JAVASCRIPT - PRODUCTION VERSION (no alerts)
         // =====================================================================
         
-        alert("✅ index-final.html loaded! JavaScript is working.");
-        
         function startLesson(lessonId) {
-            alert("🚀 Starting lesson: " + lessonId);
             window.location.href = "lesson.html?id=" + lessonId;
         }
         
         // Load progress from localStorage (if available)
         function loadProgress() {
-            alert("📊 Loading progress...");
             // TODO: Implement progress tracking
         }
         
         // Initialize
-        alert("🚀 Page loaded, calling loadProgress()...");
         loadProgress();
         
     </script>
