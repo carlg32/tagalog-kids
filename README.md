@@ -1,36 +1,111 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tagalog Kids - MVP Prototype
 
-## Getting Started
+Interactive Tagalog learning webapp for primary schoolers (Grades 1-6).
 
-First, run the development server:
+## 🚀 Quick Start (Prototype Testing)
 
+### Option 1: Open Directly in Browser
+1. Navigate to `D:\Projects\tagalog-kids\`
+2. Double-click `index.html`
+3. Click on "Lesson 1: Mga Pagbati (Greetings)"
+4. Test the interactive activities!
+
+### Option 2: Use Local Server (Better)
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd D:\Projects\tagalog-kids
+python -m http.server 8000
+```
+Then open: http://localhost:8000
+
+## 📋 Prototype Features
+
+### ✅ Implemented (MVP Ready)
+- [x] **Main Page** (`index.html`)
+  - Progress dashboard (points, lessons completed, streak)
+  - Grade 1 lesson listing
+  - Lesson unlocking system (complete with 70%+ to unlock next)
+  - localStorage for progress tracking
+
+- [x] **Lesson Page** (`lesson.html?id=g1_l01`)
+  - Vocabulary introduction with audio playback (simulated)
+  - Matching game (drag-and-drop)
+  - Multiple choice quiz
+  - Progress bar
+  - Score calculation
+  - Points system
+
+### 🚧 Next Steps (To Build)
+- [ ] **Audio Recording**: Record wife's voice for vocabulary words
+- [ ] **Real Audio Playback**: Connect to actual MP3 files
+- [ ] **More Lessons**: Create 19 more Grade 1 lessons
+- [ ] **Backend**: PostgreSQL database for progress tracking (replace localStorage)
+- [ ] **AI Integration**: Post-lesson progress analysis (Hermes Agent)
+- [ ] **Voice Input**: Azure Speech Services for pronunciation practice
+- [ ] **Gamification**: Badges, leaderboard, virtual classroom
+- [ ] **Parent Dashboard**: Progress reports, suggestions for home practice
+
+## 🏗️ Architecture (MVP)
+
+```
+Frontend (Static HTML/JS/CSS)
+  ↓
+localStorage (Progress Tracking)
+  ↓
+Future: PostgreSQL + Node.js API
+  ↓
+Future: AI Analysis (Hermes Agent - Post-Lesson)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📂 Project Structure
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+tagalog-kids/
+├── index.html          # Main page (lesson listing + progress)
+├── lesson.html         # Interactive lesson page
+├── app/               # Next.js folder (for future migration)
+├── lib/               # Lesson data (JSON)
+├── public/            # Static assets (audio, images)
+└── README.md          # This file
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🎯 MVP Roadmap (Next 2 Weeks)
 
-## Learn More
+### Week 1: Content Creation
+- [ ] Wife records audio for 20 Grade 1 vocabulary words
+- [ ] Create 5 complete lessons (JSON format)
+- [ ] Test with 2-3 kids (ages 7-8)
 
-To learn more about Next.js, take a look at the following resources:
+### Week 2: Polish & Deploy
+- [ ] Fix UI/UX issues based on kid feedback
+- [ ] Create GitHub repo (`carlg32/tagalog-kids`)
+- [ ] Deploy to `tagalogkids.dcrstreams.vip` (static hosting)
+- [ ] Set up basic analytics (Google Analytics or SimpleAnalytics)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🚀 Deployment (Future)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Static Hosting (MVP - Current Prototype)
+- **Netlify**: Drag-and-drop HTML files, free tier
+- **Vercel**: Connect GitHub repo, auto-deploy
+- **Cloudflare Pages**: Free, fast CDN
 
-## Deploy on Vercel
+### Full-Stack (Post-MVP)
+- **Frontend**: Vercel (Next.js)
+- **Backend**: Railway or Render (Node.js + PostgreSQL)
+- **Database**: Supabase or Neon (PostgreSQL)
+- **Domain**: `tagalogkids.dcrstreams.vip`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🤝 Contributing
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This is a family project:
+- **Carl G**: Development, AI integration, deployment
+- **Wife**: Lesson content, audio recording, cultural accuracy
+- **Hermes Agent**: Automation, progress analysis, deployment assistance
+
+## 📧 Contact
+
+Carl G - carlglibrary@gmail.com
+Project Link: https://github.com/carlg32/tagalog-kids
+
+---
+
+**Status**: 🟡 MVP Prototype Ready - Need to Create GitHub Repo & Deploy
