@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Tagalog Kids — Quiz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #4A90E2;
+      --secondary: #F5A623;
+      --green: #7ED321;
+      --red: #D0021B;
+      --background: #FFF9E6;
+      --text: #4A4A4A;
+      --white: #FFFFFF;
+    }
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--background);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .quiz-container {
+      background: var(--white);
+      border-radius: 2rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 550px;
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Header */
+    .quiz-header {
+      padding: 1.2rem 1.5rem;
+      background: linear-gradient(135deg, var(--primary), #6BA5F7);
+      color: white;
+    }
+    .quiz-progress-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .quiz-progress-text {
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+    .quiz-type-badge {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.2);
+    }
+    .progress-bar {
+      background: rgba(255,255,255,0.3);
+      border-radius: 10px;
+      height: 10px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      background: var(--secondary);
+      height: 100%;
+      border-radius: 10px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    /* Main quiz area */
+    .quiz-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+      gap: 1.5rem;
+    }
+
+    /* Stem (question text) */
+    .question-stem {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text);
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    /* Media area (audio button, image) */
+    .quiz-media {
+      text-align: center;
+    }
+    .quiz-audio-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      font-size: 2rem;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 12px rgba(74,144,226,0.3);
+    }
+    .quiz-audio-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 16px rgba(74,144,226,0.4);
+    }
+    .quiz-audio-btn:active {
+      transform: scale(0.95);
+    }
+    .quiz-image {
+      max-width: 200px;
+      max-height: 200px;
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    /* Choices */
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      width: 100%;
+      max-width: 400px;
+    }
+    .choice-btn {
+      background: var(--white);
+      border: 3px solid #E0E0E0;
+      padding: 1rem 1.2rem;
+      border-radius: 16px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Nunito', sans-serif;
+      color: var(--text);
+      text-align: center;
+    }
+    .choice-btn:hover {
+      border-color: var(--primary);
+      background: #F0F7FF;
+    }
+    .choice-btn:active {
+      transform: scale(0.97);
+    }
+    .choice-btn.correct {
+      border-color: var(--green);
+      background: #F0FFE8;
+      color: #5A9A1A;
+    }
+    .choice-btn.wrong {
+      border-color: var(--red);
+      background: #FFF0F0;
+      color: var(--red);
+    }
+    .choice-btn.reveal-correct {
+      border-color: var(--green);
+      background: #F0FFE8;
+      color: #5A9A1A;
+    }
+    .choice-btn:disabled {
+      cursor: default;
+      opacity: 0.8;
+    }
+
+    /* Feedback overlay */
+    .feedback {
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 700;
+      min-height: 2rem;
+    }
+    .feedback.correct { color: var(--green); }
+    .feedback.wrong { color: var(--red); }
+
+    /* Next / Results buttons */
+    .next-btn {
+      background: var(--secondary);
+      color: white;
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Nunito', sans-serif;
+      box-shadow: 0 4px 12px rgba(245,166,35,0.3);
+      display: none;
+    }
+    .next-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(245,166,35,0.4);
+    }
+
+    /* Results screen */
+    .results-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 2rem 1.5rem;
+    }
+    .results-screen.show {
+      display: flex;
+    }
+    .results-score {
+      font-size: 4rem;
+      font-weight: 800;
+    }
+    .results-score.good { color: var(--green); }
+    .results-score.ok { color: var(--secondary); }
+    .results-score.bad { color: var(--red); }
+    .results-message {
+      font-size: 1.2rem;
+      font-weight: 700;
+      text-align: center;
+    }
+    .results-detail {
+      width: 100%;
+      max-width: 400px;
+    }
+    .result-word {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid #F0F0F0;
+    }
+    .result-word .word-name {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    .result-word .word-score {
+      font-size: 0.9rem;
+    }
+    .result-word .word-score.pass { color: var(--green); }
+    .result-word .word-score.fail { color: var(--red); }
+    .results-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      width: 100%;
+      max-width: 300px;
+    }
+    .results-actions button {
+      padding: 0.8rem 1.5rem;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      transition: all 0.2s;
+    }
+    .btn-retry {
+      background: var(--primary);
+      color: white;
+      border: none;
+      box-shadow: 0 4px 12px rgba(74,144,226,0.3);
+    }
+    .btn-retry:hover {
+      transform: translateY(-2px);
+    }
+    .btn-menu {
+      background: var(--white);
+      color: var(--text);
+      border: 2px solid #DDD;
+    }
+    .btn-menu:hover {
+      border-color: var(--primary);
+    }
+
+    /* Loading / Config screen */
+    .quiz-config {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      padding: 2rem;
+      gap: 1.2rem;
+      text-align: center;
+    }
+    .quiz-config h2 {
+      font-size: 1.8rem;
+      color: var(--primary);
+    }
+    .config-row {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .config-row label {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    .config-row select {
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+      padding: 0.4rem 0.8rem;
+      border: 2px solid #DDD;
+      border-radius: 10px;
+      background: white;
+      color: var(--text);
+    }
+    .start-quiz-btn {
+      background: var(--green);
+      color: white;
+      border: none;
+      padding: 1rem 2.5rem;
+      border-radius: 50px;
+      font-size: 1.2rem;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      box-shadow: 0 4px 12px rgba(126,211,33,0.3);
+      transition: all 0.2s;
+      margin-top: 0.5rem;
+    }
+    .start-quiz-btn:hover {
+      transform: translateY(-2px);
+    }
+    .no-words-msg {
+      color: var(--text);
+      opacity: 0.6;
+      font-size: 1rem;
+    }
+
+    @media (max-width: 480px) {
+      .quiz-container { min-height: 90vh; border-radius: 1.5rem; }
+      .question-stem { font-size: 1.1rem; }
+      .choice-btn { font-size: 1rem; padding: 0.8rem 1rem; }
+      .results-score { font-size: 3rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container" id="quiz-container">
+
+    <!-- Header (hidden during config/results) -->
+    <header class="quiz-header" id="quiz-header" style="display:none">
+      <div class="quiz-progress-info">
+        <span class="quiz-progress-text" id="quiz-progress-text">1 / 5</span>
+        <span class="quiz-type-badge" id="quiz-type-badge">Word Match</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="quiz-progress-fill"></div>
+      </div>
+    </header>
+
+    <!-- Config Screen -->
+    <div class="quiz-config" id="quiz-config">
+      <h2>📝 Quiz Time!</h2>
+      <p style="color:var(--text);opacity:0.7;">Test what you've learned</p>
+
+      <div class="config-row">
+        <label>Difficulty</label>
+        <select id="quiz-difficulty">
+          <option value="easy">Easy (2 choices)</option>
+          <option value="hard">Hard (4 choices)</option>
+        </select>
+      </div>
+
+      <div class="config-row">
+        <label>Questions</label>
+        <select id="quiz-count">
+          <option value="5">5 questions</option>
+          <option value="10" selected>10 questions</option>
+          <option value="15">15 questions</option>
+          <option value="20">20 questions</option>
+        </select>
+      </div>
+
+      <div style="font-size:0.85rem;color:var(--text);opacity:0.6;" id="quiz-available-words"></div>
+
+      <button class="start-quiz-btn" id="start-quiz-btn">🎯 Start Quiz</button>
+      <a href="index.html" style="font-size:0.85rem;color:var(--primary);">← Back to menu</a>
+    </div>
+
+    <!-- Quiz Body (hidden during config/results) -->
+    <div class="quiz-body" id="quiz-body" style="display:none">
+      <div class="question-stem" id="question-stem">What does "Kumusta" mean?</div>
+
+      <div class="quiz-media" id="quiz-media"></div>
+
+      <div class="choices" id="choices"></div>
+
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="next-btn">Next →</button>
+    </div>
+
+    <!-- Results Screen -->
+    <div class="results-screen" id="results-screen">
+      <div class="results-score" id="results-score">0%</div>
+      <div class="results-message" id="results-message">Keep practicing!</div>
+      <div class="results-detail" id="results-detail"></div>
+      <div class="results-actions">
+        <button class="btn-retry" id="btn-retry">🔄 Try Again</button>
+        <button class="btn-menu" id="btn-menu">🏠 Back to Menu</button>
+      </div>
+    </div>
+
+  </div>
+
+  <audio id="quiz-audio" preload="auto"></audio>
+
+  <script src="js/word-selector.js"></script>
+  <script src="js/quiz.js"></script>
+  <script>
+    // ===== State =====
+    let allWords = [];
+    let quiz = null;
+    let answered = false;
+
+    // ===== Load Words =====
+    async function loadWords() {
+      try {
+        const res = await fetch('data/word-list-grade1-greetings-all.json');
+        allWords = await res.json();
+        document.getElementById('quiz-available-words').textContent = 
+          `${allWords.length} words available for quiz`;
+      } catch(e) {
+        document.getElementById('quiz-available-words').textContent = '⚠️ Failed to load words';
+      }
+    }
+
+    // ===== Start Quiz =====
+    function startQuiz() {
+      if (allWords.length < 4) {
+        alert('Need at least 4 words for a quiz. Generate more words first.');
+        return;
+      }
+
+      const difficulty = document.getElementById('quiz-difficulty').value;
+      const count = parseInt(document.getElementById('quiz-count').value);
+
+      quiz = new QuizEngine(allWords, difficulty, count);
+      answered = false;
+
+      // Show header + body, hide config
+      document.getElementById('quiz-config').style.display = 'none';
+      document.getElementById('quiz-header').style.display = 'block';
+      document.getElementById('quiz-body').style.display = 'flex';
+      document.getElementById('results-screen').classList.remove('show');
+
+      showQuestion();
+    }
+
+    // ===== Show Question =====
+    function showQuestion() {
+      const q = quiz.getCurrentQuestion();
+      if (!q) {
+        showResults();
+        return;
+      }
+
+      answered = false;
+
+      // Header
+      const progress = quiz.getProgress();
+      document.getElementById('quiz-progress-text').textContent = 
+        `${progress.current} / ${progress.total}`;
+      document.getElementById('quiz-progress-fill').style.width = `${progress.percentage}%`;
+
+      // Type badge
+      const typeMap = {
+        'word-match': 'Word Match',
+        'translation-match': 'Translation',
+        'audio-quiz': '🔊 Audio',
+        'image-quiz': '📷 Picture'
+      };
+      document.getElementById('quiz-type-badge').textContent = typeMap[q.type] || 'Quiz';
+
+      // Question stem
+      document.getElementById('question-stem').textContent = q.stem;
+
+      // Media
+      const mediaArea = document.getElementById('quiz-media');
+      mediaArea.innerHTML = '';
+
+      if (q.type === 'audio-quiz' && q.audioFile) {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-audio-btn';
+        btn.textContent = '🔊';
+        btn.onclick = () => {
+          const audio = document.getElementById('quiz-audio');
+          audio.src = q.audioFile;
+          audio.play().catch(e => console.log('Audio play prevented:', e));
+        };
+        mediaArea.appendChild(btn);
+      }
+
+      if (q.type === 'image-quiz' && q.imageFile) {
+        const img = document.createElement('img');
+        img.className = 'quiz-image';
+        img.src = q.imageFile;
+        img.alt = 'Quiz illustration';
+        mediaArea.appendChild(img);
+      }
+
+      // Choices
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      document.getElementById('feedback').textContent = '';
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('next-btn').style.display = 'none';
+
+      q.choices.forEach((text, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = text;
+        btn.onclick = () => selectChoice(i);
+        choicesDiv.appendChild(btn);
+      });
+    }
+
+    // ===== Select Answer =====
+    function selectChoice(index) {
+      if (answered) return;
+      answered = true;
+
+      const result = quiz.answer(index);
+      if (!result) return;
+
+      const buttons = document.querySelectorAll('.choice-btn');
+      
+      // Disable all buttons
+      buttons.forEach(b => b.disabled = true);
+
+      // Highlight correct/wrong
+      if (result.correct) {
+        buttons[index].classList.add('correct');
+        document.getElementById('feedback').textContent = '✅ Correct!';
+        document.getElementById('feedback').className = 'feedback correct';
+      } else {
+        buttons[index].classList.add('wrong');
+        buttons[result.correctIndex].classList.add('reveal-correct');
+        const correctText = quiz.getCurrentQuestion().choices[result.correctIndex];
+        document.getElementById('feedback').textContent = `❌ The answer was: ${correctText}`;
+        document.getElementById('feedback').className = 'feedback wrong';
+      }
+
+      // Show next button
+      const isLast = quiz.currentIndex >= quiz.totalQuestions - 1;
+      document.getElementById('next-btn').textContent = isLast ? '📊 See Results' : 'Next →';
+      document.getElementById('next-btn').style.display = 'block';
+    }
+
+    // ===== Next Question / Results =====
+    document.getElementById('next-btn').addEventListener('click', () => {
+      const nextQ = quiz.nextQuestion();
+      if (nextQ) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    });
+
+    // ===== Show Results =====
+    function showResults() {
+      const results = quiz.getResults();
+
+      // Hide quiz body, show results
+      document.getElementById('quiz-header').style.display = 'none';
+      document.getElementById('quiz-body').style.display = 'none';
+      document.getElementById('results-screen').classList.add('show');
+
+      // Score
+      const scoreEl = document.getElementById('results-score');
+      scoreEl.textContent = `${results.percentage}%`;
+      scoreEl.className = 'results-score';
+      if (results.percentage >= 80) scoreEl.classList.add('good');
+      else if (results.percentage >= 50) scoreEl.classList.add('ok');
+      else scoreEl.classList.add('bad');
+
+      // Message
+      const msg = document.getElementById('results-message');
+      if (results.percentage >= 80) msg.textContent = '🎉 Ang galing! (Excellent!)';
+      else if (results.percentage >= 50) msg.textContent = '👍 Keep practicing! (Patuloy!)';
+      else msg.textContent = '💪 Review the words and try again!';
+
+      // Detail per word
+      const detail = document.getElementById('results-detail');
+      detail.innerHTML = '<h3 style="font-size:0.9rem;margin-bottom:0.5rem;">Per Word:</h3>';
+      
+      for (const [wordId, stat] of Object.entries(results.wordResults)) {
+        const word = allWords.find(w => w.wordId === wordId);
+        const pct = Math.round((stat.correct / stat.total) * 100);
+        const row = document.createElement('div');
+        row.className = 'result-word';
+        row.innerHTML = `
+          <span class="word-name">${word ? word.tagalog : wordId}</span>
+          <span class="word-score ${pct >= 50 ? 'pass' : 'fail'}">
+            ${stat.correct}/${stat.total}
+          </span>
+        `;
+        detail.appendChild(row);
+      }
+    }
+
+    // ===== Retry =====
+    document.getElementById('btn-retry').addEventListener('click', () => {
+      document.getElementById('results-screen').classList.remove('show');
+      document.getElementById('quiz-config').style.display = 'flex';
+    });
+
+    // ===== Back to Menu =====
+    document.getElementById('btn-menu').addEventListener('click', () => {
+      window.location.href = 'index.html';
+    });
+
+    // ===== Start Button =====
+    document.getElementById('start-quiz-btn').addEventListener('click', startQuiz);
+
+    // ===== Init =====
+    loadWords();
+  </script>
+</body>
+</html>
