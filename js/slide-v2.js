@@ -310,12 +310,13 @@ function playAudio() {
     return;
   }
   
+  // Track practice on sound click (regardless of audio playback success)
+  const word = wordList[currentWordIndex];
+  if (word) trackPractice(word.wordId);
+  
+  // Play audio (may be blocked by autoplay policies on first click)
   elements.audioPlayer.play().then(() => {
     elements.soundIconBtn.classList.add('playing');
-    
-    // Track practice on sound click!
-    const word = wordList[currentWordIndex];
-    if (word) trackPractice(word.wordId);
     
     elements.audioPlayer.onended = () => {
       elements.soundIconBtn.classList.remove('playing');
