@@ -1,12 +1,11 @@
 /**
  * Slide Template JavaScript v2 — Tagalog Kids
  * 
- * Changes from v1:
- * - Removed "Mark Complete" functionality
- * - Sound icon moved next to word (inline)
- * - Simplified navigation (Previous/Next only)
- * - Auto-save progress on navigation
- * - NEW: Apply CSS animation based on wordId
+ * Features:
+ * - Loads words from JSON or ?words= query param (curated sessions)
+ * - Sound-click tracking (records practice when 🔊 is clicked)
+ * - Per-word progress in localStorage
+ * - Streak tracking
  */
 
 // ===== Configuration =====
@@ -19,8 +18,9 @@ const CONFIG = {
 
 // ===== State =====
 let currentWordIndex = 0;
-let wordList = [];
-let progress = {};
+let wordList = [];       // Words loaded (full or curated session)
+let progress = {};       // localStorage progress
+let isSession = false;   // True if loaded from ?words= param
 
 // ===== DOM Elements =====
 const elements = {
@@ -35,7 +35,9 @@ const elements = {
   nextBtn: document.getElementById('next-btn'),
   progressFill: document.getElementById('progress-fill'),
   progressText: document.getElementById('progress-text'),
-  exampleSentence: document.getElementById('example-sentence')
+  exampleSentence: document.getElementById('example-sentence'),
+  masteryBadge: document.getElementById('mastery-badge'),
+  endBtn: document.getElementById('end-btn')
 };
 
 // ===== Initialize =====
@@ -44,6 +46,10 @@ async function init() {
   
   // Load word list
   await loadWordList();
+  if (wordList.length === 0) {
+    document.getElementById('slide-container').innerHTML = '<p style="text-align:center;padding:4rem;font-size:1.2rem;">No words selected. <a href="index.html">Go back</a></p>';
+    return;
+  }
   
   // Load progress from localStorage
   loadProgress();
@@ -54,26 +60,42 @@ async function init() {
   // Show first word
   showWord(currentWordIndex);
   
-  console.log('✅ Initialization complete!');
+  console.log(`✅ Init complete: ${wordList.length} words, session=${isSession}`);
 }
 
 // ===== Load Word List =====
 async function loadWordList() {
+  // Check for ?words= query param (curated session)
+  const params = new URLSearchParams(window.location.search);
+  const wordIdsParam = params.get('words');
+
+  if (wordIdsParam) {
+    // Load all words from JSON, then filter by wordIds
+    isSession = true;
+    try {
+      const response = await fetch(CONFIG.wordListFile);
+      const allWords = await response.json();
+      const wantedIds = wordIdsParam.split(',').map(s => s.trim());
+      wordList = wantedIds.map(id => allWords.find(w => w.wordId === id)).filter(Boolean);
+      console.log(`📚 Session mode: ${wordList.length} curated words`);
+      if (wordList.length === 0) {
+        console.warn('⚠️ No matching words found for IDs:', wantedIds);
+      }
+    } catch (error) {
+      console.error('❌ Error loading curated word list:', error);
+    }
+    return;
+  }
+
+  // Normal mode: load all words
   try {
     const response = await fetch(CONFIG.wordListFile);
     wordList = await response.json();
-    console.log(`📚 Loaded ${wordList.length} words`);
+    console.log(`📚 Loaded ${wordList.length} words (all)`);
   } catch (error) {
     console.error('❌ Error loading word list:', error);
-    // Fallback: hardcoded words for testing
     wordList = [
-      {
-        wordId: 'greetings-01-female-kumusta',
-        tagalog: 'Kumusta',
-        english: 'How are you?',
-        grade: 1,
-        category: 'greetings'
-      }
+      { wordId: 'greetings-01-female-kumusta', tagalog: 'Kumusta', english: 'How are you?', grade: 1, category: 'greetings' }
     ];
   }
 }
@@ -82,16 +104,38 @@ async function loadWordList() {
 function loadProgress() {
   const saved = localStorage.getItem(CONFIG.progressKey);
   if (saved) {
-    progress = JSON.parse(saved);
-  } else {
-    progress = {
-      words: {},
-      currentIndex: 0
-    };
+    try {
+      progress = JSON.parse(saved);
+    } catch(e) {
+      progress = {};
+    }
   }
   
-  // Restore last position
-  currentWordIndex = progress.currentIndex || 0;
+  // Ensure schema
+  if (!progress.words) progress.words = {};
+  if (!progress.streak) progress.streak = 0;
+  if (!progress.lastActiveDate) progress.lastActiveDate = null;
+  if (!progress.sessionDate) progress.sessionDate = null;
+  if (!progress.sessionWords) progress.sessionWords = [];
+  
+  // Update streak
+  const today = new Date().toISOString().split('T')[0];
+  if (progress.lastActiveDate === today) {
+    // Already active today, streak continues
+  } else if (progress.lastActiveDate) {
+    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+    if (progress.lastActiveDate === yesterday) {
+      progress.streak += 1;
+    } else {
+      progress.streak = 0; // Streak broken
+    }
+  } else {
+    progress.streak = 0;
+  }
+  progress.lastActiveDate = today;
+  
+  // Restore last position (only in non-session mode)
+  currentWordIndex = isSession ? 0 : (progress.currentIndex || 0);
 }
 
 // ===== Save Progress =====
@@ -100,8 +144,21 @@ function saveProgress() {
   localStorage.setItem(CONFIG.progressKey, JSON.stringify(progress));
 }
 
+// ===== Track Practice (Sound Click) =====
+function trackPractice(wordId) {
+  if (!progress.words) progress.words = {};
+  if (!progress.words[wordId]) {
+    progress.words[wordId] = { timesPracticed: 0, mastered: false };
+  }
+  const wp = progress.words[wordId];
+  wp.lastPracticed = new Date().toISOString();
+  wp.timesPracticed = (wp.timesPracticed || 0) + 1;
+  wp.mastered = wp.timesPracticed >= 3;
+  saveProgress();
+  console.log(`🔊 Tracked practice: ${wordId} (${wp.timesPracticed}x)`);
+}
+
 // ===== Animation Overlay Definitions =====
-// Map wordId patterns to image animation + overlay elements
 const ANIMATION_DEFS = {
   'kumusta':        { imgClass: 'img-anim-bounce',       overlays: [] },
   'salamat':        { imgClass: '',                       overlays: [{ class: 'overlay-heart', text: '❤️', top: '5%', right: '5%', left: 'auto', bottom: 'auto' }] },
@@ -124,27 +181,20 @@ const ANIMATION_DEFS = {
 
 // ===== Apply Animation =====
 function applyAnimation(wordId) {
-  // 1. Strip image animation classes from the <img>
   elements.illustration.className = 'illustration';
   
-  // 2. Remove any existing overlay elements from .character-scene
   const existingOverlays = elements.characterScene.querySelectorAll('.animation-overlay');
   existingOverlays.forEach(el => el.remove());
   
-  // 3. Extract the tagalog key from wordId
-  // Example: "greetings-01-female-kumusta" → "kumusta"
   const parts = wordId.split('-');
-  const tagalogKey = parts.slice(3).join('-'); // Remove prefix: greetings-01-female-
+  const tagalogKey = parts.slice(3).join('-');
   
-  // 4. Look up animation def
   const def = ANIMATION_DEFS[tagalogKey];
   if (!def) {
     console.log(`🎨 No animation defined for: ${tagalogKey}`);
     return;
   }
   
-  // 5. Apply image animation (inline style - more reliable than CSS class)
-  // Clear any previous animation
   elements.illustration.style.animation = '';
   
   if (def.imgClass) {
@@ -157,12 +207,10 @@ function applyAnimation(wordId) {
     const inlineAnim = animMap[def.imgClass];
     if (inlineAnim) {
       elements.illustration.style.animation = inlineAnim;
-      console.log(`🎨 Animation: ${inlineAnim}`);
     }
   }
   
-  // 6. Create overlay elements (if any)
-  def.overlays.forEach((overlayConfig, i) => {
+  def.overlays.forEach((overlayConfig) => {
     const overlay = document.createElement('span');
     overlay.className = `animation-overlay ${overlayConfig.class}`;
     overlay.textContent = overlayConfig.text;
@@ -171,7 +219,6 @@ function applyAnimation(wordId) {
     overlay.style.right = overlayConfig.right || 'auto';
     overlay.style.bottom = overlayConfig.bottom || 'auto';
     elements.characterScene.appendChild(overlay);
-    console.log(`🎨 Added overlay ${i + 1}: ${overlayConfig.text}`);
   });
 }
 
@@ -185,48 +232,55 @@ function showWord(index) {
   const word = wordList[index];
   currentWordIndex = index;
   
-  // Update UI
-  // Note: tagalogWord now contains the word + sound icon button
-  // We need to preserve the button while updating the text
+  // Update word text (preserve sound button)
   const soundBtn = elements.soundIconBtn;
   elements.tagalogWord.textContent = word.tagalog;
   elements.tagalogWord.appendChild(soundBtn);
   
   elements.englishTranslation.textContent = `"${word.english}"`;
   
-  // Update illustration (if exists, else show placeholder)
+  // Update illustration
   const illustrationPath = `${CONFIG.illustrationBasePath}${word.wordId}.webp`;
   elements.illustration.src = illustrationPath;
   elements.illustration.alt = `Illustration for ${word.tagalog}`;
   
-  // Apply animation based on wordId
   applyAnimation(word.wordId);
   
+  // Image error/load handlers
   elements.illustration.onerror = () => {
-    // If illustration doesn't exist, show placeholder
     elements.illustration.style.display = 'none';
     elements.characterScene.innerHTML = '<div class="placeholder-illustration">🎨</div>';
-    // Re-append the illustration (hidden) for next word
     elements.characterScene.appendChild(elements.illustration);
   };
   
   elements.illustration.onload = () => {
     elements.illustration.style.display = 'block';
     const placeholder = elements.characterScene.querySelector('.placeholder-illustration');
-    if (placeholder) {
-      placeholder.remove();
-    }
+    if (placeholder) placeholder.remove();
   };
   
   // Update audio source
   const audioPath = `${CONFIG.audioBasePath}${word.wordId}.mp3`;
   elements.audioPlayer.src = audioPath;
   
-  // Update example sentence (hide if empty)
-  const wordData = wordList[index];
-  if (wordData.exampleTagalog && wordData.exampleEnglish) {
-    document.querySelector('.example-sentence .tagalog-text').textContent = wordData.exampleTagalog;
-    document.querySelector('.example-sentence .english-text').textContent = wordData.exampleEnglish;
+  // Update mastery badge
+  const wp = progress.words?.[word.wordId];
+  if (elements.masteryBadge) {
+    if (wp?.mastered) {
+      elements.masteryBadge.textContent = '⭐ Mastered!';
+      elements.masteryBadge.style.display = 'inline';
+    } else if (wp?.timesPracticed && wp.timesPracticed > 0) {
+      elements.masteryBadge.textContent = `🔊 ${wp.timesPracticed}/3`;
+      elements.masteryBadge.style.display = 'inline';
+    } else {
+      elements.masteryBadge.style.display = 'none';
+    }
+  }
+  
+  // Update example sentence
+  if (word.exampleTagalog && word.exampleEnglish) {
+    document.querySelector('.example-sentence .tagalog-text').textContent = word.exampleTagalog;
+    document.querySelector('.example-sentence .english-text').textContent = word.exampleEnglish;
     elements.exampleSentence.style.display = 'block';
   } else {
     elements.exampleSentence.style.display = 'none';
@@ -237,11 +291,15 @@ function showWord(index) {
   elements.progressFill.style.width = `${progressPercent}%`;
   elements.progressText.textContent = `${index + 1} / ${wordList.length}`;
   
-  // Update navigation buttons
+  // Navigation buttons
   elements.prevBtn.disabled = index === 0;
   elements.nextBtn.disabled = index === wordList.length - 1;
   
-  // Save current position
+  // Session end button
+  if (elements.endBtn) {
+    elements.endBtn.style.display = isSession && index === wordList.length - 1 ? 'block' : 'none';
+  }
+  
   saveProgress();
 }
 
@@ -252,12 +310,13 @@ function playAudio() {
     return;
   }
   
-  // Play audio
   elements.audioPlayer.play().then(() => {
-    // Visual feedback
     elements.soundIconBtn.classList.add('playing');
     
-    // Remove playing state when audio ends
+    // Track practice on sound click!
+    const word = wordList[currentWordIndex];
+    if (word) trackPractice(word.wordId);
+    
     elements.audioPlayer.onended = () => {
       elements.soundIconBtn.classList.remove('playing');
     };
@@ -268,30 +327,37 @@ function playAudio() {
 
 // ===== Navigation =====
 function goToPrevWord() {
-  if (currentWordIndex > 0) {
-    showWord(currentWordIndex - 1);
-  }
+  if (currentWordIndex > 0) showWord(currentWordIndex - 1);
 }
 
 function goToNextWord() {
-  if (currentWordIndex < wordList.length - 1) {
-    showWord(currentWordIndex + 1);
-  }
+  if (currentWordIndex < wordList.length - 1) showWord(currentWordIndex + 1);
+}
+
+// ===== End Session =====
+function endSession() {
+  // Mark session as complete in progress
+  progress.sessionDate = new Date().toISOString().split('T')[0];
+  saveProgress();
+  
+  // Return to dashboard
+  window.location.href = 'index.html';
 }
 
 // ===== Setup Event Listeners =====
 function setupEventListeners() {
-  // Sound icon button (next to word)
   elements.soundIconBtn.addEventListener('click', (event) => {
     event.stopPropagation();
     playAudio();
   });
   
-  // Navigation buttons
   elements.prevBtn.addEventListener('click', goToPrevWord);
   elements.nextBtn.addEventListener('click', goToNextWord);
   
-  // Keyboard navigation
+  if (elements.endBtn) {
+    elements.endBtn.addEventListener('click', endSession);
+  }
+  
   document.addEventListener('keydown', (event) => {
     switch(event.key) {
       case 'ArrowLeft':
@@ -312,13 +378,7 @@ function setupEventListeners() {
 // ===== Start App =====
 document.addEventListener('DOMContentLoaded', init);
 
-// Export for testing (if needed)
+// Export for testing
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = {
-    init,
-    showWord,
-    playAudio,
-    goToPrevWord,
-    goToNextWord
-  };
+  module.exports = { init, showWord, playAudio, goToPrevWord, goToNextWord, endSession };
 }

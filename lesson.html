@@ -13,13 +13,16 @@
 <body>
   <div class="slide-container" id="slide-container">
     
-    <!-- Header: Progress Only -->
+    <!-- Header: Progress + Mastery Badge -->
     <header class="slide-header">
       <div class="progress-container">
         <div class="progress-bar">
           <div class="progress-fill" id="progress-fill"></div>
         </div>
-        <span class="progress-text" id="progress-text">1 / 11</span>
+        <div class="progress-info">
+          <span class="progress-text" id="progress-text">1 / 11</span>
+          <span class="mastery-badge" id="mastery-badge"></span>
+        </div>
       </div>
     </header>
 
@@ -45,9 +48,10 @@
       </div>
     </main>
 
-    <!-- Footer: Navigation Only -->
+    <!-- Footer: Navigation + End Session -->
     <footer class="slide-footer">
       <button class="nav-btn prev-btn" id="prev-btn">← Previous</button>
+      <button class="end-btn" id="end-btn" style="display:none">🎉 Done! Back to Menu</button>
       <button class="nav-btn next-btn" id="next-btn">Next →</button>
     </footer>
 
@@ -59,6 +63,7 @@
   </audio>
 
   <!-- JavaScript -->
+  <script src="js/word-selector.js"></script>
   <script src="js/slide-v2.js"></script>
 </body>
 </html>

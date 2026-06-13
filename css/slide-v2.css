@@ -58,7 +58,7 @@ body {
   overflow: hidden;
 }
 
-/* ===== Header (Progress Only) ===== */
+/* ===== Header (Progress + Badge) ===== */
 .slide-header {
   padding: var(--spacing-md);
   background: linear-gradient(135deg, var(--primary), #6BA5F7);
@@ -71,6 +71,28 @@ body {
   gap: var(--spacing-xs);
 }
 
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progress-text {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.mastery-badge {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--secondary);
+  background: rgba(255, 255, 255, 0.85);
+  padding: 0.2rem 0.7rem;
+  border-radius: 20px;
+  display: none;
+}
+
+/* Progress Bar */
 .progress-bar {
   background: rgba(255, 255, 255, 0.3);
   border-radius: 10px;
@@ -84,12 +106,6 @@ body {
   border-radius: 10px;
   transition: width 0.3s ease;
   width: 9%; /* 1/11 = 9% */
-}
-
-.progress-text {
-  font-size: 0.9rem;
-  font-weight: 700;
-  text-align: right;
 }
 
 /* ===== Main Content (Illustration + Word) ===== */
@@ -217,7 +233,7 @@ body {
   font-style: italic;
 }
 
-/* ===== Footer (Navigation Only) ===== */
+/* ===== Footer (Navigation + End) ===== */
 .slide-footer {
   display: flex;
   align-items: center;
@@ -255,6 +271,31 @@ body {
   transform: scale(0.95);
 }
 
+/* End Session Button */
+.end-btn {
+  background: var(--secondary);
+  color: var(--white);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+  font-family: 'Nunito', sans-serif;
+  box-shadow: 0 4px 12px rgba(245, 166, 35, 0.3);
+}
+
+.end-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(245, 166, 35, 0.5);
+}
+
+.end-btn:active {
+  transform: scale(0.95);
+}
+
 /* ===== Responsive (Tablet/Mobile) ===== */
 @media (max-width: 768px) {
   .slide-container {
@@ -275,6 +316,11 @@ body {
   }
 
   .nav-btn {
+    font-size: 0.9rem;
+    padding: 0.7rem 1rem;
+  }
+
+  .end-btn {
     font-size: 0.9rem;
     padding: 0.7rem 1rem;
   }
