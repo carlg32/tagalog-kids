@@ -343,7 +343,12 @@ function onNextClick() {
       if (nextQ) {
         showQuizQuestion();
       } else {
-        // Quiz ended → handled by showQuizQuestion's null check
+        // Quiz ended → auto-transition to hard or congrats
+        if (phase === 'quiz-easy') {
+          startQuiz('hard');
+        } else {
+          showCongrats();
+        }
       }
       break;
   }
