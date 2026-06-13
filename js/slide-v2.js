@@ -335,14 +335,17 @@ function goToNextWord() {
   if (currentWordIndex < wordList.length - 1) showWord(currentWordIndex + 1);
 }
 
-// ===== End Session =====
+// ===== End Session → Auto-Start Quiz =====
 function endSession() {
   // Mark session as complete in progress
   progress.sessionDate = new Date().toISOString().split('T')[0];
   saveProgress();
   
-  // Return to dashboard
-  window.location.href = 'index.html';
+  // Get the session words from the current word list
+  const wordIds = wordList.map(w => w.wordId).join(',');
+  
+  // Auto-transition to quiz with same words
+  window.location.href = `quiz.html?words=${encodeURIComponent(wordIds)}&difficulty=easy&count=5`;
 }
 
 // ===== Setup Event Listeners =====

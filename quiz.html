@@ -422,6 +422,7 @@
     let allWords = [];
     let quiz = null;
     let answered = false;
+    let autoStarted = false;  // True if started from ?words= param
 
     // ===== Load Words =====
     async function loadWords() {
@@ -430,9 +431,44 @@
         allWords = await res.json();
         document.getElementById('quiz-available-words').textContent = 
           `${allWords.length} words available for quiz`;
+        
+        // Check if auto-started from learning session
+        const params = new URLSearchParams(window.location.search);
+        const wordsParam = params.get('words');
+        if (wordsParam) {
+          autoStarted = true;
+          const difficulty = params.get('difficulty') || 'easy';
+          const count = parseInt(params.get('count')) || 5;
+          
+          // Filter allWords to only the session words
+          const wordIds = wordsParam.split(',').map(s => s.trim());
+          const sessionWords = wordIds.map(id => allWords.find(w => w.wordId === id)).filter(Boolean);
+          
+          if (sessionWords.length >= 4) {
+            startQuizWithWords(sessionWords, difficulty, count);
+          } else {
+            // Fall back to config screen
+            document.getElementById('quiz-available-words').textContent = 
+              '⚠️ Not enough words for quiz. Please start a learning session first.';
+          }
+        }
       } catch(e) {
         document.getElementById('quiz-available-words').textContent = '⚠️ Failed to load words';
       }
+    }
+
+    // ===== Start Quiz (with specific words) =====
+    function startQuizWithWords(words, difficulty, count) {
+      quiz = new QuizEngine(words, difficulty, count);
+      answered = false;
+
+      // Show header + body, hide config
+      document.getElementById('quiz-config').style.display = 'none';
+      document.getElementById('quiz-header').style.display = 'block';
+      document.getElementById('quiz-body').style.display = 'flex';
+      document.getElementById('results-screen').classList.remove('show');
+
+      showQuestion();
     }
 
     // ===== Start Quiz =====
@@ -611,8 +647,21 @@
 
     // ===== Retry =====
     document.getElementById('btn-retry').addEventListener('click', () => {
-      document.getElementById('results-screen').classList.remove('show');
-      document.getElementById('quiz-config').style.display = 'flex';
+      if (autoStarted) {
+        // Restart same quiz with same words
+        const params = new URLSearchParams(window.location.search);
+        const wordsParam = params.get('words');
+        const difficulty = params.get('difficulty') || 'easy';
+        const count = parseInt(params.get('count')) || 5;
+        const wordIds = wordsParam.split(',').map(s => s.trim());
+        const sessionWords = wordIds.map(id => allWords.find(w => w.wordId === id)).filter(Boolean);
+        if (sessionWords.length >= 4) {
+          startQuizWithWords(sessionWords, difficulty, count);
+        }
+      } else {
+        document.getElementById('results-screen').classList.remove('show');
+        document.getElementById('quiz-config').style.display = 'flex';
+      }
     });
 
     // ===== Back to Menu =====
