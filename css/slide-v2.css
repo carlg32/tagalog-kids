@@ -1,0 +1,302 @@
+/**
+ * Slide Template Styles v2 — Tagalog Kids
+ * 
+ * Changes from v1:
+ * - Removed "Mark Complete" button
+ * - Moved sound icon next to word (inline)
+ * - Simplified header (progress only)
+ * - Simplified footer (navigation only)
+ */
+
+/* ===== CSS Reset & Base ===== */
+* {
+  margin:0;
+  padding:0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Color Palette */
+  --primary: #4A90E2;
+  --secondary: #F5A623;
+  --success: #7ED321;
+  --danger: #D0021B;
+  --background: #FFF9E6;
+  --text: #4A4A4A;
+  --white: #FFFFFF;
+  --shadow: rgba(0, 0, 0, 0.1);
+  
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 3rem;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--background);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm);
+}
+
+/* ===== Slide Container ===== */
+.slide-container {
+  background: var(--white);
+  border-radius: 2rem;
+  box-shadow: 0 8px 32px var(--shadow);
+  width: 100%;
+  max-width: 600px;
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ===== Header (Progress Only) ===== */
+.slide-header {
+  padding: var(--spacing-md);
+  background: linear-gradient(135deg, var(--primary), #6BA5F7);
+  color: var(--white);
+}
+
+.progress-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.progress-bar {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  height: 12px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  background: var(--secondary);
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.3s ease;
+  width: 9%; /* 1/11 = 9% */
+}
+
+.progress-text {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+/* ===== Main Content (Illustration + Word) ===== */
+.slide-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  gap: var(--spacing-md);
+}
+
+.character-scene {
+  width: 100%;
+  max-width: 300px;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #E8F4FD, #FFF9E6);
+  border-radius: 1.5rem;
+  padding: var(--spacing-md);
+  overflow: hidden;
+  position: relative;
+}
+
+.illustration {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 1rem;
+}
+
+.word-display {
+  text-align: center;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tagalog-word {
+  font-size: 4rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: var(--spacing-xs);
+  text-shadow: 2px 2px 0px var(--shadow);
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+
+.sound-icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  transition: transform 0.2s;
+  display: inline-flex;
+  align-items: center;
+}
+
+.sound-icon-btn:hover {
+  transform: scale(1.2);
+}
+
+.sound-icon-btn:active {
+  transform: scale(0.9);
+}
+
+.sound-icon {
+  font-size: 2rem;
+}
+
+.sound-icon-btn.playing .sound-icon {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+.english-translation {
+  font-size: 1.5rem;
+  color: var(--text);
+  font-weight: 400;
+  font-style: italic;
+}
+
+.example-sentence {
+  text-align: center;
+  padding: var(--spacing-md);
+  background: #F8F8F8;
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.example-sentence .tagalog-text {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.example-sentence .english-text {
+  font-size: 1rem;
+  color: var(--text);
+  font-style: italic;
+}
+
+/* ===== Footer (Navigation Only) ===== */
+.slide-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background: var(--white);
+  border-top: 2px solid #F0F0F0;
+}
+
+.nav-btn {
+  background: var(--white);
+  border: 2px solid var(--primary);
+  color: var(--primary);
+  padding: 0.8rem 1.5rem;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+}
+
+.nav-btn:hover:not(:disabled) {
+  background: var(--primary);
+  color: var(--white);
+}
+
+.nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.nav-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+/* ===== Responsive (Tablet/Mobile) ===== */
+@media (max-width: 768px) {
+  .slide-container {
+    min-height: 90vh;
+    border-radius: 1.5rem;
+  }
+
+  .tagalog-word {
+    font-size: 3rem;
+  }
+
+  .english-translation {
+    font-size: 1.2rem;
+  }
+
+  .character-scene {
+    max-width: 250px;
+  }
+
+  .nav-btn {
+    font-size: 0.9rem;
+    padding: 0.7rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .tagalog-word {
+    font-size: 2.5rem;
+  }
+
+  .sound-icon {
+    font-size: 1.5rem;
+  }
+}
+
+/* ===== Utility Classes ===== */
+.hidden {
+  display: none !important;
+}
+
+/* ===== Placeholder (No Illustration Yet) ===== */
+.placeholder-illustration {
+  font-size: 4rem;
+  opacity: 0.3;
+}

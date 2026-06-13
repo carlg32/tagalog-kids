@@ -1,0 +1,184 @@
+/**
+ * CSS Animations — Tagalog Kids
+ * 
+ * Two types of animations:
+ *   1. Image animations (applied to <img class="illustration">): bounce, glow, slide
+ *   2. Overlay animations (applied to <span> elements inside .character-scene): heart, sun, stars
+ */
+
+/* ===== 1. Kumusta (How are you?) — Gentle Bounce ===== */
+@keyframes bounce-gentle {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+.img-anim-bounce {
+  animation: bounce-gentle 2s ease-in-out infinite;
+}
+
+/* ===== 2. Salamat (Thank you) — Heart Overlay ===== */
+@keyframes pulse-heart {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(1.4); opacity: 0.8; }
+}
+
+.overlay-heart {
+  content: '❤️';
+  position: absolute;
+  top: 5%;
+  right: 5%;
+  font-size: 2.5rem;
+  animation: pulse-heart 1.5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ===== 3. Magandang Umaga (Good morning) — Sun Overlay ===== */
+@keyframes rotate-sun {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.overlay-sun {
+  content: '☀️';
+  position: absolute;
+  top: 3%;
+  left: 10%;
+  font-size: 2rem;
+  animation: rotate-sun 10s linear infinite;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ===== 4. Paalam (Goodbye) — Bounce + Waving Overlay ===== */
+.overlay-waving {
+  content: '👋';
+  position: absolute;
+  top: 5%;
+  right: 10%;
+  font-size: 2rem;
+  animation: wave-hand 1s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 10;
+}
+
+@keyframes wave-hand {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25%      { transform: rotate(-15deg) scale(1.1); }
+  75%      { transform: rotate(15deg) scale(1.1); }
+}
+
+/* ===== 5. Magandang Hapon (Good afternoon) — Bounce ===== */
+.img-anim-bounce-fast {
+  animation: bounce-gentle 1.5s ease-in-out infinite;
+}
+
+/* ===== 6. Magandang Gabi (Good evening) — Stars ===== */
+@keyframes twinkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.3; transform: scale(0.7); }
+}
+
+.overlay-star {
+  position: absolute;
+  font-size: 1.5rem;
+  animation: twinkle 1.5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.overlay-star-2 {
+  position: absolute;
+  font-size: 1.2rem;
+  animation: twinkle 2s ease-in-out infinite;
+  animation-delay: 0.5s;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ===== 7. Magandang Araw (Good day) — Rainbow Overlay ===== */
+.overlay-rainbow {
+  content: '🌈';
+  position: absolute;
+  bottom: 5%;
+  left: 10%;
+  font-size: 3rem;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.overlay-rainbow-anim {
+  animation: fade-in-slide 2s ease-out forwards;
+}
+
+@keyframes fade-in-slide {
+  0%   { opacity: 0; transform: translateX(-30px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+/* ===== 8. Tuloy Kayo (Please come in) — Breathe/Scale ===== */
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.05); }
+}
+
+.img-anim-breathe {
+  animation: breathe 2.5s ease-in-out infinite;
+}
+
+/* ===== 9. Hanggang sa Muli (Until we meet again) — Floating Hearts ===== */
+.overlay-float-hearts {
+  content: '💕';
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  font-size: 2rem;
+  animation: float-up 2.5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 10;
+}
+
+@keyframes float-up {
+  0%   { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-70px) scale(0.3); opacity: 0; }
+}
+
+/* ===== 10. Kumain ka na? (Have you eaten?) — Steam ===== */
+@keyframes steam-rise {
+  0%   { transform: translateY(0) scale(1); opacity: 0.8; }
+  100% { transform: translateY(-50px) scale(1.5); opacity: 0; }
+}
+
+.overlay-steam {
+  position: absolute;
+  font-size: 1.5rem;
+  animation: steam-rise 2s ease-out infinite;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.overlay-steam-2 {
+  position: absolute;
+  font-size: 1.3rem;
+  animation: steam-rise 2.5s ease-out infinite;
+  animation-delay: 0.5s;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ===== 11. Saan Pupunta? (Where are you going?) — Slide ===== */
+@keyframes slide-side {
+  0%   { transform: translateX(-15px); }
+  100% { transform: translateX(15px); }
+}
+
+.img-anim-slide {
+  animation: slide-side 2s ease-in-out infinite alternate;
+}
+
+/* ===== Utility: Reset placeholder ===== */
+.placeholder-illustration {
+  font-size: 6rem;
+  text-align: center;
+  padding: 40px;
+}
