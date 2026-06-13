@@ -26,6 +26,7 @@ let currentWordIndex = 0;
 let quiz = null;
 let answered = false;
 let sessionWords = [];
+let allQuizAnswers = [];  // Accumulates answers across Easy + Hard
 
 // ===== DOM Elements =====
 const $ = id => document.getElementById(id);
@@ -182,6 +183,8 @@ function showWord(index) {
 function startQuiz(difficulty) {
   phase = difficulty === 'hard' ? 'quiz-hard' : 'quiz-easy';
   answered = false;
+  // Reset accumulated answers when starting a fresh Easy quiz
+  if (difficulty === 'easy') allQuizAnswers = [];
   const count = 5;
   quiz = new QuizEngine(wordList, difficulty, count);
 
@@ -251,6 +254,12 @@ function selectQuizAnswer(index) {
   const result = quiz.answer(index);
   if (!result) return;
 
+  // Accumulate answer across both quiz rounds
+  allQuizAnswers.push({
+    wordId: result.wordId,
+    correct: result.correct
+  });
+
   const btns = document.querySelectorAll('.choice-btn');
   btns.forEach(b => b.disabled = true);
 
@@ -284,7 +293,7 @@ function showCongrats() {
   el.nextBtn.style.display = 'none';
 
   // Combine easy + hard results
-  const allAnswers = quiz ? quiz.answers : [];
+  const allAnswers = allQuizAnswers;
   const correct = allAnswers.filter(a => a.correct).length;
   const total = allAnswers.length;
   const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
