@@ -296,6 +296,141 @@ body {
   transform: scale(0.95);
 }
 
+/* ===== Quiz Section ===== */
+.quiz-icon {
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.quiz-audio-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 12px rgba(74,144,226,0.3);
+}
+.quiz-audio-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(74,144,226,0.4);
+}
+
+.quiz-image {
+  max-width: 180px;
+  max-height: 180px;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.question-stem {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+}
+
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  width: 100%;
+  max-width: 380px;
+}
+
+.choice-btn {
+  background: var(--white);
+  border: 3px solid #E0E0E0;
+  padding: 0.9rem 1.2rem;
+  border-radius: 14px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Nunito', sans-serif;
+  color: var(--text);
+  text-align: center;
+}
+.choice-btn:hover {
+  border-color: var(--primary);
+  background: #F0F7FF;
+}
+.choice-btn:active {
+  transform: scale(0.97);
+}
+.choice-btn.correct {
+  border-color: var(--green);
+  background: #F0FFE8;
+  color: #5A9A1A;
+}
+.choice-btn.wrong {
+  border-color: var(--red);
+  background: #FFF0F0;
+  color: var(--red);
+}
+.choice-btn.reveal-correct {
+  border-color: var(--green);
+  background: #F0FFE8;
+  color: #5A9A1A;
+}
+.choice-btn:disabled {
+  cursor: default;
+  opacity: 0.8;
+}
+
+.feedback {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  min-height: 1.5rem;
+}
+.feedback.correct { color: var(--green); }
+.feedback.wrong { color: var(--red); }
+
+/* ===== Congrats Section ===== */
+.congrats-icon {
+  font-size: 5rem;
+  text-align: center;
+}
+.congrats-score {
+  font-size: 4rem;
+  font-weight: 800;
+  text-align: center;
+}
+.congrats-message {
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text);
+}
+.congrats-detail {
+  width: 100%;
+  max-width: 350px;
+}
+.result-word {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #F0F0F0;
+  font-size: 0.95rem;
+}
+
+/* Phase badge */
+.phase-badge {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.2rem 0.7rem;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.2);
+}
+
 /* ===== Responsive (Tablet/Mobile) ===== */
 @media (max-width: 768px) {
   .slide-container {

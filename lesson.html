@@ -13,25 +13,24 @@
 <body>
   <div class="slide-container" id="slide-container">
     
-    <!-- Header: Progress + Mastery Badge -->
+    <!-- Header: Progress + Phase Badge -->
     <header class="slide-header">
       <div class="progress-container">
         <div class="progress-bar">
           <div class="progress-fill" id="progress-fill"></div>
         </div>
         <div class="progress-info">
-          <span class="progress-text" id="progress-text">1 / 11</span>
-          <span class="mastery-badge" id="mastery-badge"></span>
+          <span class="progress-text" id="progress-text">1 / 5</span>
+          <span class="phase-badge" id="phase-badge">Learn</span>
         </div>
       </div>
     </header>
 
-    <!-- Main Content: Illustration + Word -->
-    <main class="slide-main">
+    <!-- ===== LEARN PHASE ===== -->
+    <main class="slide-main" id="learn-section">
       <div class="character-scene" id="character-scene">
         <img src="" alt="Illustration" class="illustration" id="illustration">
       </div>
-
       <div class="word-display">
         <h1 class="tagalog-word" id="tagalog-word">
           Kumusta
@@ -41,17 +40,32 @@
         </h1>
         <p class="english-translation" id="english-translation">"How are you?"</p>
       </div>
-
       <div class="example-sentence" id="example-sentence">
         <p class="tagalog-text"></p>
         <p class="english-text"></p>
       </div>
     </main>
 
-    <!-- Footer: Navigation + End Session -->
+    <!-- ===== QUIZ PHASE (hidden during learn) ===== -->
+    <main class="slide-main" id="quiz-section" style="display:none">
+      <div class="quiz-icon" id="quiz-icon">📝</div>
+      <div class="question-stem" id="question-stem">What does "Kumusta" mean?</div>
+      <div class="choices" id="choices"></div>
+      <div class="feedback" id="feedback"></div>
+    </main>
+
+    <!-- ===== CONGRATS SECTION (hidden) ===== -->
+    <main class="slide-main" id="congrats-section" style="display:none">
+      <div class="congrats-icon" id="congrats-icon">🎉</div>
+      <div class="congrats-score" id="congrats-score">100%</div>
+      <div class="congrats-message" id="congrats-message">Ang galing! Excellent!</div>
+      <div class="congrats-detail" id="congrats-detail"></div>
+      <a href="index.html" class="nav-btn" style="text-decoration:none;display:inline-block;padding:0.8rem 2rem;margin-top:1rem;">🏠 Back to Menu</a>
+    </main>
+
+    <!-- Footer: Previous (learn) + Next -->
     <footer class="slide-footer">
-      <button class="nav-btn prev-btn" id="prev-btn">← Previous</button>
-      <button class="end-btn" id="end-btn" style="display:none">🎯 Start Quiz!</button>
+      <button class="nav-btn prev-btn" id="prev-btn" style="display:none">← Back</button>
       <button class="nav-btn next-btn" id="next-btn">Next →</button>
     </footer>
 
@@ -62,8 +76,8 @@
     <source src="" type="audio/mpeg">
   </audio>
 
-  <!-- JavaScript -->
   <script src="js/word-selector.js"></script>
+  <script src="js/quiz.js"></script>
   <script src="js/slide-v2.js"></script>
 </body>
 </html>

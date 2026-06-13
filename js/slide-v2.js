@@ -1,11 +1,13 @@
 /**
  * Slide Template JavaScript v2 — Tagalog Kids
  * 
- * Features:
- * - Loads words from JSON or ?words= query param (curated sessions)
- * - Sound-click tracking (records practice when 🔊 is clicked)
- * - Per-word progress in localStorage
- * - Streak tracking
+ * Seamless 3-phase flow:
+ *   1. LEARN: word slides with 🔊 practice
+ *   2. QUIZ EASY: 5 questions, 2 choices → auto
+ *   3. QUIZ HARD: 5 questions, 4 choices → auto
+ *   4. CONGRATS: final score + celebration
+ * 
+ * Student just presses "Next" the whole way through.
  */
 
 // ===== Configuration =====
@@ -17,148 +19,361 @@ const CONFIG = {
 };
 
 // ===== State =====
+let wordList = [];
+let progress = {};
+let phase = 'learn';  // 'learn' | 'quiz-easy' | 'quiz-hard' | 'complete'
 let currentWordIndex = 0;
-let wordList = [];       // Words loaded (full or curated session)
-let progress = {};       // localStorage progress
-let isSession = false;   // True if loaded from ?words= param
+let quiz = null;
+let answered = false;
+let sessionWords = [];
 
 // ===== DOM Elements =====
-const elements = {
-  container: document.getElementById('slide-container'),
-  tagalogWord: document.getElementById('tagalog-word'),
-  englishTranslation: document.getElementById('english-translation'),
-  illustration: document.getElementById('illustration'),
-  characterScene: document.getElementById('character-scene'),
-  soundIconBtn: document.getElementById('sound-icon-btn'),
-  audioPlayer: document.getElementById('audio-player'),
-  prevBtn: document.getElementById('prev-btn'),
-  nextBtn: document.getElementById('next-btn'),
-  progressFill: document.getElementById('progress-fill'),
-  progressText: document.getElementById('progress-text'),
-  exampleSentence: document.getElementById('example-sentence'),
-  masteryBadge: document.getElementById('mastery-badge'),
-  endBtn: document.getElementById('end-btn')
+const $ = id => document.getElementById(id);
+const el = {
+  container: $('slide-container'),
+  tagalogWord: $('tagalog-word'),
+  englishTranslation: $('english-translation'),
+  illustration: $('illustration'),
+  characterScene: $('character-scene'),
+  soundIconBtn: $('sound-icon-btn'),
+  audioPlayer: $('audio-player'),
+  nextBtn: $('next-btn'),
+  prevBtn: $('prev-btn'),
+  progressFill: $('progress-fill'),
+  progressText: $('progress-text'),
+  phaseBadge: $('phase-badge'),
+  learnSection: $('learn-section'),
+  quizSection: $('quiz-section'),
+  congratsSection: $('congrats-section'),
+  questionStem: $('question-stem'),
+  choices: $('choices'),
+  feedback: $('feedback'),
+  congratsScore: $('congrats-score'),
+  congratsMessage: $('congrats-message'),
+  congratsDetail: $('congrats-detail'),
+  quizIcon: $('quiz-icon'),
+  exampleSentence: $('example-sentence')
 };
 
 // ===== Initialize =====
 async function init() {
-  console.log('🎤 Initializing Tagalog Kids Slide v2...');
-  
-  // Load word list
   await loadWordList();
-  if (wordList.length === 0) {
-    document.getElementById('slide-container').innerHTML = '<p style="text-align:center;padding:4rem;font-size:1.2rem;">No words selected. <a href="index.html">Go back</a></p>';
-    return;
-  }
-  
-  // Load progress from localStorage
   loadProgress();
-  
-  // Set up event listeners
   setupEventListeners();
-  
-  // Show first word
-  showWord(currentWordIndex);
-  
-  console.log(`✅ Init complete: ${wordList.length} words, session=${isSession}`);
+  startLearning();
 }
 
 // ===== Load Word List =====
 async function loadWordList() {
-  // Check for ?words= query param (curated session)
   const params = new URLSearchParams(window.location.search);
   const wordIdsParam = params.get('words');
 
   if (wordIdsParam) {
-    // Load all words from JSON, then filter by wordIds
-    isSession = true;
-    try {
-      const response = await fetch(CONFIG.wordListFile);
-      const allWords = await response.json();
-      const wantedIds = wordIdsParam.split(',').map(s => s.trim());
-      wordList = wantedIds.map(id => allWords.find(w => w.wordId === id)).filter(Boolean);
-      console.log(`📚 Session mode: ${wordList.length} curated words`);
-      if (wordList.length === 0) {
-        console.warn('⚠️ No matching words found for IDs:', wantedIds);
-      }
-    } catch (error) {
-      console.error('❌ Error loading curated word list:', error);
-    }
-    return;
-  }
-
-  // Normal mode: load all words
-  try {
+    const response = await fetch(CONFIG.wordListFile);
+    const allWords = await response.json();
+    const wantedIds = wordIdsParam.split(',').map(s => s.trim());
+    wordList = wantedIds.map(id => allWords.find(w => w.wordId === id)).filter(Boolean);
+    sessionWords = wordList.map(w => w.wordId);
+  } else {
     const response = await fetch(CONFIG.wordListFile);
     wordList = await response.json();
-    console.log(`📚 Loaded ${wordList.length} words (all)`);
-  } catch (error) {
-    console.error('❌ Error loading word list:', error);
-    wordList = [
-      { wordId: 'greetings-01-female-kumusta', tagalog: 'Kumusta', english: 'How are you?', grade: 1, category: 'greetings' }
-    ];
+    sessionWords = wordList.map(w => w.wordId);
   }
 }
 
-// ===== Load Progress =====
+// ===== Progress =====
 function loadProgress() {
   const saved = localStorage.getItem(CONFIG.progressKey);
-  if (saved) {
-    try {
-      progress = JSON.parse(saved);
-    } catch(e) {
-      progress = {};
-    }
-  }
-  
-  // Ensure schema
+  progress = saved ? JSON.parse(saved) : { words: {}, streak: 0, lastActiveDate: null };
   if (!progress.words) progress.words = {};
   if (!progress.streak) progress.streak = 0;
-  if (!progress.lastActiveDate) progress.lastActiveDate = null;
-  if (!progress.sessionDate) progress.sessionDate = null;
-  if (!progress.sessionWords) progress.sessionWords = [];
   
-  // Update streak
   const today = new Date().toISOString().split('T')[0];
-  if (progress.lastActiveDate === today) {
-    // Already active today, streak continues
-  } else if (progress.lastActiveDate) {
+  if (progress.lastActiveDate === today) { /* OK */ }
+  else if (progress.lastActiveDate) {
     const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-    if (progress.lastActiveDate === yesterday) {
-      progress.streak += 1;
-    } else {
-      progress.streak = 0; // Streak broken
-    }
-  } else {
-    progress.streak = 0;
+    progress.streak = progress.lastActiveDate === yesterday ? progress.streak + 1 : 0;
   }
   progress.lastActiveDate = today;
-  
-  // Restore last position (only in non-session mode)
-  currentWordIndex = isSession ? 0 : (progress.currentIndex || 0);
+  saveProgress();
 }
 
-// ===== Save Progress =====
 function saveProgress() {
-  progress.currentIndex = currentWordIndex;
   localStorage.setItem(CONFIG.progressKey, JSON.stringify(progress));
 }
 
-// ===== Track Practice (Sound Click) =====
 function trackPractice(wordId) {
-  if (!progress.words) progress.words = {};
-  if (!progress.words[wordId]) {
-    progress.words[wordId] = { timesPracticed: 0, mastered: false };
-  }
+  if (!progress.words[wordId]) progress.words[wordId] = { timesPracticed: 0, mastered: false };
   const wp = progress.words[wordId];
   wp.lastPracticed = new Date().toISOString();
   wp.timesPracticed = (wp.timesPracticed || 0) + 1;
   wp.mastered = wp.timesPracticed >= 3;
   saveProgress();
-  console.log(`🔊 Tracked practice: ${wordId} (${wp.timesPracticed}x)`);
 }
 
-// ===== Animation Overlay Definitions =====
+// =====================================================================
+//  PHASE 1: LEARN
+// =====================================================================
+
+function startLearning() {
+  phase = 'learn';
+  currentWordIndex = 0;
+  showLearnSection();
+  showWord(currentWordIndex);
+}
+
+function showWord(index) {
+  if (index < 0 || index >= wordList.length) return;
+  const word = wordList[index];
+  currentWordIndex = index;
+
+  // Word + translation
+  const soundBtn = el.soundIconBtn;
+  el.tagalogWord.textContent = word.tagalog;
+  el.tagalogWord.appendChild(soundBtn);
+  el.englishTranslation.textContent = `"${word.english}"`;
+
+  // Illustration
+  el.illustration.src = `${CONFIG.illustrationBasePath}${word.wordId}.webp`;
+  el.illustration.alt = `Illustration for ${word.tagalog}`;
+  applyAnimation(word.wordId);
+
+  el.illustration.onerror = () => {
+    el.illustration.style.display = 'none';
+    el.characterScene.innerHTML = '<div class="placeholder-illustration">🎨</div>';
+    el.characterScene.appendChild(el.illustration);
+  };
+  el.illustration.onload = () => {
+    el.illustration.style.display = 'block';
+    const ph = el.characterScene.querySelector('.placeholder-illustration');
+    if (ph) ph.remove();
+  };
+
+  // Audio
+  el.audioPlayer.src = `${CONFIG.audioBasePath}${word.wordId}.mp3`;
+
+  // Mastery badge
+  const wp = progress.words?.[word.wordId];
+  el.phaseBadge.textContent = wp?.mastered ? '⭐ Mastered' : (wp?.timesPracticed ? `🔊 ${wp.timesPracticed}/3` : 'Learn');
+
+  // Progress
+  const total = wordList.length;
+  el.progressText.textContent = `${index + 1} / ${total}`;
+  el.progressFill.style.width = `${((index + 1) / total) * 100}%`;
+
+  // Previous button (only during learn)
+  el.prevBtn.style.display = index > 0 ? 'block' : 'none';
+  el.nextBtn.textContent = index < total - 1 ? 'Next →' : 'Next →';
+
+  // Example sentence
+  if (word.exampleTagalog && word.exampleEnglish) {
+    document.querySelector('#example-sentence .tagalog-text').textContent = word.exampleTagalog;
+    document.querySelector('#example-sentence .english-text').textContent = word.exampleEnglish;
+    el.exampleSentence.style.display = 'block';
+  } else {
+    el.exampleSentence.style.display = 'none';
+  }
+}
+
+// =====================================================================
+//  PHASE 2 & 3: QUIZ (Easy then Hard)
+// =====================================================================
+
+function startQuiz(difficulty) {
+  phase = difficulty === 'hard' ? 'quiz-hard' : 'quiz-easy';
+  answered = false;
+  const count = 5;
+  quiz = new QuizEngine(wordList, difficulty, count);
+
+  el.phaseBadge.textContent = difficulty === 'hard' ? 'Quiz Hard' : 'Quiz Easy';
+  showQuizQuestion();
+}
+
+function showQuizQuestion() {
+  const q = quiz.getCurrentQuestion();
+  if (!q) {
+    // Quiz ended → transition to next phase
+    if (phase === 'quiz-easy') {
+      // Auto-start hard quiz
+      startQuiz('hard');
+    } else {
+      showCongrats();
+    }
+    return;
+  }
+
+  answered = false;
+
+  // Progress
+  const pg = quiz.getProgress();
+  el.progressText.textContent = `${pg.current} / ${pg.total}`;
+  el.progressFill.style.width = `${pg.percentage}%`;
+
+  // Show quiz section, hide learn
+  showQuizSection();
+
+  // Question stem
+  const typeIcon = { 'word-match': '', 'translation-match': '', 'audio-quiz': '🔊 ', 'image-quiz': '📷 ' };
+  el.questionStem.textContent = (typeIcon[q.type] || '') + q.stem;
+
+  // Quiz icon
+  const icons = { 'word-match': '📝', 'translation-match': '📝', 'audio-quiz': '🔊', 'image-quiz': '📷' };
+  el.quizIcon.textContent = icons[q.type] || '📝';
+
+  // Audio/Image media
+  let mediaHtml = '';
+  if (q.type === 'audio-quiz' && q.audioFile) {
+    mediaHtml = `<button class="quiz-audio-btn" onclick="document.getElementById('quiz-audio').src='${q.audioFile}';document.getElementById('quiz-audio').play()">🔊</button>`;
+  }
+  if (q.type === 'image-quiz' && q.imageFile) {
+    mediaHtml = `<img src="${q.imageFile}" class="quiz-image" alt="Quiz illustration">`;
+  }
+  el.quizIcon.innerHTML = mediaHtml || '📝';
+
+  // Choices
+  el.choices.innerHTML = '';
+  el.feedback.textContent = '';
+  el.feedback.className = 'feedback';
+
+  q.choices.forEach((text, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = text;
+    btn.onclick = () => selectQuizAnswer(i);
+    el.choices.appendChild(btn);
+  });
+}
+
+function selectQuizAnswer(index) {
+  if (answered) return;
+  answered = true;
+
+  const result = quiz.answer(index);
+  if (!result) return;
+
+  const btns = document.querySelectorAll('.choice-btn');
+  btns.forEach(b => b.disabled = true);
+
+  if (result.correct) {
+    btns[index].classList.add('correct');
+    el.feedback.textContent = '✅ Correct!';
+    el.feedback.className = 'feedback correct';
+  } else {
+    btns[index].classList.add('wrong');
+    btns[result.correctIndex].classList.add('reveal-correct');
+    el.feedback.textContent = `❌ The answer was: ${quiz.getCurrentQuestion().choices[result.correctIndex]}`;
+    el.feedback.className = 'feedback wrong';
+  }
+
+  // Next button shows automatically
+}
+
+// =====================================================================
+//  PHASE 4: CONGRATULATIONS
+// =====================================================================
+
+function showCongrats() {
+  phase = 'complete';
+  el.progressFill.style.width = '100%';
+  el.progressText.textContent = 'Done!';
+  el.phaseBadge.textContent = '🎉 Complete';
+
+  el.learnSection.style.display = 'none';
+  el.quizSection.style.display = 'none';
+  el.congratsSection.style.display = 'flex';
+  el.nextBtn.style.display = 'none';
+
+  // Combine easy + hard results
+  const allAnswers = quiz ? quiz.answers : [];
+  const correct = allAnswers.filter(a => a.correct).length;
+  const total = allAnswers.length;
+  const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+  el.congratsScore.textContent = `${pct}%`;
+  if (pct >= 80) {
+    el.congratsMessage.textContent = '🎉 Ang galing! Excellent!';
+    el.congratsScore.style.color = '#7ED321';
+  } else if (pct >= 50) {
+    el.congratsMessage.textContent = '👍 Magaling! Good job!';
+    el.congratsScore.style.color = '#F5A623';
+  } else {
+    el.congratsMessage.textContent = '💪 Keep practicing! Try again!';
+    el.congratsScore.style.color = '#D0021B';
+  }
+
+  // Per-word breakdown
+  const detail = el.congratsDetail;
+  detail.innerHTML = '<h3 style="font-size:0.9rem;margin-bottom:0.5rem;opacity:0.7;">Words:</h3>';
+  const wordResults = {};
+  for (const a of allAnswers) {
+    if (!wordResults[a.wordId]) wordResults[a.wordId] = { correct: 0, total: 0 };
+    wordResults[a.wordId].total++;
+    if (a.correct) wordResults[a.wordId].correct++;
+  }
+  for (const [wordId, stat] of Object.entries(wordResults)) {
+    const w = wordList.find(x => x.wordId === wordId);
+    const p = Math.round((stat.correct / stat.total) * 100);
+    const d = document.createElement('div');
+    d.className = 'result-word';
+    d.innerHTML = `<span style="font-weight:700;">${w ? w.tagalog : wordId}</span> <span style="color:${p >= 50 ? '#7ED321' : '#D0021B'}">${stat.correct}/${stat.total}</span>`;
+    detail.appendChild(d);
+  }
+
+  saveProgress();
+}
+
+// =====================================================================
+//  NAVIGATION — Single "Next" button handles everything
+// =====================================================================
+
+function onNextClick() {
+  switch (phase) {
+    case 'learn':
+      if (currentWordIndex < wordList.length - 1) {
+        showWord(currentWordIndex + 1);
+      } else {
+        // Last word → auto-transition to quiz
+        startQuiz('easy');
+      }
+      break;
+
+    case 'quiz-easy':
+    case 'quiz-hard':
+      const nextQ = quiz.nextQuestion();
+      if (nextQ) {
+        showQuizQuestion();
+      } else {
+        // Quiz ended → handled by showQuizQuestion's null check
+      }
+      break;
+  }
+}
+
+// =====================================================================
+//  UI HELPERS
+// =====================================================================
+
+function showLearnSection() {
+  el.learnSection.style.display = 'flex';
+  el.quizSection.style.display = 'none';
+  el.congratsSection.style.display = 'none';
+  el.nextBtn.style.display = 'block';
+  el.nextBtn.textContent = 'Next →';
+}
+
+function showQuizSection() {
+  el.learnSection.style.display = 'none';
+  el.quizSection.style.display = 'flex';
+  el.congratsSection.style.display = 'none';
+  el.nextBtn.style.display = 'block';
+  el.nextBtn.textContent = 'Next →';
+  el.prevBtn.style.display = 'none';
+}
+
+// =====================================================================
+//  ANIMATIONS (unchanged from v2)
+// =====================================================================
+
 const ANIMATION_DEFS = {
   'kumusta':        { imgClass: 'img-anim-bounce',       overlays: [] },
   'salamat':        { imgClass: '',                       overlays: [{ class: 'overlay-heart', text: '❤️', top: '5%', right: '5%', left: 'auto', bottom: 'auto' }] },
@@ -179,210 +394,73 @@ const ANIMATION_DEFS = {
   'saan-pupunta':   { imgClass: 'img-anim-slide',        overlays: [] }
 };
 
-// ===== Apply Animation =====
 function applyAnimation(wordId) {
-  elements.illustration.className = 'illustration';
+  el.illustration.className = 'illustration';
+  const overlays = el.characterScene.querySelectorAll('.animation-overlay');
+  overlays.forEach(o => o.remove());
   
-  const existingOverlays = elements.characterScene.querySelectorAll('.animation-overlay');
-  existingOverlays.forEach(el => el.remove());
+  const key = wordId.split('-').slice(3).join('-');
+  const def = ANIMATION_DEFS[key];
+  if (!def) return;
   
-  const parts = wordId.split('-');
-  const tagalogKey = parts.slice(3).join('-');
-  
-  const def = ANIMATION_DEFS[tagalogKey];
-  if (!def) {
-    console.log(`🎨 No animation defined for: ${tagalogKey}`);
-    return;
-  }
-  
-  elements.illustration.style.animation = '';
-  
+  el.illustration.style.animation = '';
   if (def.imgClass) {
-    const animMap = {
+    const map = {
       'img-anim-bounce': 'bounce-gentle 2s ease-in-out infinite',
       'img-anim-bounce-fast': 'bounce-gentle 1.5s ease-in-out infinite',
       'img-anim-breathe': 'breathe 2.5s ease-in-out infinite',
       'img-anim-slide': 'slide-side 2s ease-in-out infinite alternate',
     };
-    const inlineAnim = animMap[def.imgClass];
-    if (inlineAnim) {
-      elements.illustration.style.animation = inlineAnim;
-    }
+    if (map[def.imgClass]) el.illustration.style.animation = map[def.imgClass];
   }
-  
-  def.overlays.forEach((overlayConfig) => {
-    const overlay = document.createElement('span');
-    overlay.className = `animation-overlay ${overlayConfig.class}`;
-    overlay.textContent = overlayConfig.text;
-    overlay.style.top = overlayConfig.top || 'auto';
-    overlay.style.left = overlayConfig.left || 'auto';
-    overlay.style.right = overlayConfig.right || 'auto';
-    overlay.style.bottom = overlayConfig.bottom || 'auto';
-    elements.characterScene.appendChild(overlay);
+  def.overlays.forEach(o => {
+    const span = document.createElement('span');
+    span.className = `animation-overlay ${o.class}`;
+    span.textContent = o.text;
+    span.style.top = o.top || 'auto';
+    span.style.left = o.left || 'auto';
+    span.style.right = o.right || 'auto';
+    span.style.bottom = o.bottom || 'auto';
+    el.characterScene.appendChild(span);
   });
 }
 
-// ===== Show Word =====
-function showWord(index) {
-  if (index < 0 || index >= wordList.length) {
-    console.warn('⚠️ Word index out of bounds:', index);
-    return;
-  }
-  
-  const word = wordList[index];
-  currentWordIndex = index;
-  
-  // Update word text (preserve sound button)
-  const soundBtn = elements.soundIconBtn;
-  elements.tagalogWord.textContent = word.tagalog;
-  elements.tagalogWord.appendChild(soundBtn);
-  
-  elements.englishTranslation.textContent = `"${word.english}"`;
-  
-  // Update illustration
-  const illustrationPath = `${CONFIG.illustrationBasePath}${word.wordId}.webp`;
-  elements.illustration.src = illustrationPath;
-  elements.illustration.alt = `Illustration for ${word.tagalog}`;
-  
-  applyAnimation(word.wordId);
-  
-  // Image error/load handlers
-  elements.illustration.onerror = () => {
-    elements.illustration.style.display = 'none';
-    elements.characterScene.innerHTML = '<div class="placeholder-illustration">🎨</div>';
-    elements.characterScene.appendChild(elements.illustration);
-  };
-  
-  elements.illustration.onload = () => {
-    elements.illustration.style.display = 'block';
-    const placeholder = elements.characterScene.querySelector('.placeholder-illustration');
-    if (placeholder) placeholder.remove();
-  };
-  
-  // Update audio source
-  const audioPath = `${CONFIG.audioBasePath}${word.wordId}.mp3`;
-  elements.audioPlayer.src = audioPath;
-  
-  // Update mastery badge
-  const wp = progress.words?.[word.wordId];
-  if (elements.masteryBadge) {
-    if (wp?.mastered) {
-      elements.masteryBadge.textContent = '⭐ Mastered!';
-      elements.masteryBadge.style.display = 'inline';
-    } else if (wp?.timesPracticed && wp.timesPracticed > 0) {
-      elements.masteryBadge.textContent = `🔊 ${wp.timesPracticed}/3`;
-      elements.masteryBadge.style.display = 'inline';
-    } else {
-      elements.masteryBadge.style.display = 'none';
-    }
-  }
-  
-  // Update example sentence
-  if (word.exampleTagalog && word.exampleEnglish) {
-    document.querySelector('.example-sentence .tagalog-text').textContent = word.exampleTagalog;
-    document.querySelector('.example-sentence .english-text').textContent = word.exampleEnglish;
-    elements.exampleSentence.style.display = 'block';
-  } else {
-    elements.exampleSentence.style.display = 'none';
-  }
-  
-  // Update progress bar
-  const progressPercent = ((index + 1) / wordList.length) * 100;
-  elements.progressFill.style.width = `${progressPercent}%`;
-  elements.progressText.textContent = `${index + 1} / ${wordList.length}`;
-  
-  // Navigation buttons
-  elements.prevBtn.disabled = index === 0;
-  elements.nextBtn.disabled = index === wordList.length - 1;
-  
-  // Session end button
-  if (elements.endBtn) {
-    elements.endBtn.style.display = isSession && index === wordList.length - 1 ? 'block' : 'none';
-  }
-  
-  saveProgress();
-}
-
-// ===== Play Audio =====
+// ===== Audio Playback =====
 function playAudio() {
-  if (!elements.audioPlayer.src) {
-    console.warn('⚠️ No audio source set');
-    return;
-  }
-  
-  // Track practice on sound click (regardless of audio playback success)
+  if (!el.audioPlayer.src) return;
   const word = wordList[currentWordIndex];
   if (word) trackPractice(word.wordId);
   
-  // Play audio (may be blocked by autoplay policies on first click)
-  elements.audioPlayer.play().then(() => {
-    elements.soundIconBtn.classList.add('playing');
-    
-    elements.audioPlayer.onended = () => {
-      elements.soundIconBtn.classList.remove('playing');
-    };
-  }).catch(error => {
-    console.error('❌ Error playing audio:', error);
-  });
+  el.audioPlayer.play().then(() => {
+    el.soundIconBtn.classList.add('playing');
+    el.audioPlayer.onended = () => el.soundIconBtn.classList.remove('playing');
+  }).catch(() => {});
 }
 
-// ===== Navigation =====
-function goToPrevWord() {
-  if (currentWordIndex > 0) showWord(currentWordIndex - 1);
-}
-
-function goToNextWord() {
-  if (currentWordIndex < wordList.length - 1) showWord(currentWordIndex + 1);
-}
-
-// ===== End Session → Auto-Start Quiz =====
-function endSession() {
-  // Mark session as complete in progress
-  progress.sessionDate = new Date().toISOString().split('T')[0];
-  saveProgress();
-  
-  // Get the session words from the current word list
-  const wordIds = wordList.map(w => w.wordId).join(',');
-  
-  // Auto-transition to quiz with same words
-  window.location.href = `quiz.html?words=${encodeURIComponent(wordIds)}&difficulty=easy&count=5`;
-}
-
-// ===== Setup Event Listeners =====
+// ===== Event Listeners =====
 function setupEventListeners() {
-  elements.soundIconBtn.addEventListener('click', (event) => {
-    event.stopPropagation();
-    playAudio();
+  el.soundIconBtn.addEventListener('click', e => { e.stopPropagation(); playAudio(); });
+  el.nextBtn.addEventListener('click', onNextClick);
+  el.prevBtn.addEventListener('click', () => {
+    if (phase === 'learn' && currentWordIndex > 0) showWord(currentWordIndex - 1);
   });
-  
-  elements.prevBtn.addEventListener('click', goToPrevWord);
-  elements.nextBtn.addEventListener('click', goToNextWord);
-  
-  if (elements.endBtn) {
-    elements.endBtn.addEventListener('click', endSession);
-  }
-  
-  document.addEventListener('keydown', (event) => {
-    switch(event.key) {
-      case 'ArrowLeft':
-        goToPrevWord();
-        break;
-      case 'ArrowRight':
-        goToNextWord();
-        break;
-      case ' ':
-      case 'Spacebar':
-        event.preventDefault();
-        playAudio();
-        break;
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') {
+      e.preventDefault();
+      if (phase === 'learn' && el.nextBtn.disabled) return;
+      onNextClick();
+    }
+    if (e.key === 'ArrowLeft' && phase === 'learn') {
+      if (currentWordIndex > 0) showWord(currentWordIndex - 1);
     }
   });
 }
 
-// ===== Start App =====
+// ===== Start =====
 document.addEventListener('DOMContentLoaded', init);
 
-// Export for testing
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { init, showWord, playAudio, goToPrevWord, goToNextWord, endSession };
-}
+// Audio element for quiz
+const quizAudio = document.createElement('audio');
+quizAudio.id = 'quiz-audio';
+document.body.appendChild(quizAudio);
