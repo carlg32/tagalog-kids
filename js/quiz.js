@@ -84,6 +84,20 @@ class QuizEngine {
   }
 
   /**
+   * Go back to the previous question
+   * @returns {Object|null}
+   */
+  prevQuestion() {
+    if (this.currentIndex > 0) {
+      // Remove the last answer (current question's answer)
+      this.answers.pop();
+      this.currentIndex--;
+      return this.getCurrentQuestion();
+    }
+    return null;
+  }
+
+  /**
    * Get results summary
    * @returns {Object} { score, total, percentage, answers[], wordResults }
    */

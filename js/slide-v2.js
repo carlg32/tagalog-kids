@@ -6,11 +6,8 @@
  *   2. QUIZ EASY: 5 questions, 2 choices → auto
  *   3. QUIZ HARD: 5 questions, 4 choices → auto
  *   4. CONGRATS: final score + celebration
- * 
- * Student just presses "Next" the whole way through.
  */
 
-// ===== Configuration =====
 const CONFIG = {
   wordListFile: 'data/word-list-grade1-greetings-all.json',
   audioBasePath: 'assets/audio/',
@@ -18,17 +15,15 @@ const CONFIG = {
   progressKey: 'tagalog-kids-progress'
 };
 
-// ===== State =====
 let wordList = [];
 let progress = {};
-let phase = 'learn';  // 'learn' | 'quiz-easy' | 'quiz-hard' | 'complete'
+let phase = 'learn';
 let currentWordIndex = 0;
 let quiz = null;
 let answered = false;
 let sessionWords = [];
-let allQuizAnswers = [];  // Accumulates answers across Easy + Hard
+let allQuizAnswers = {};  // keyed by "phase-index" — survives re-answer
 
-// ===== DOM Elements =====
 const $ = id => document.getElementById(id);
 const el = {
   container: $('slide-container'),
@@ -53,10 +48,10 @@ const el = {
   congratsMessage: $('congrats-message'),
   congratsDetail: $('congrats-detail'),
   quizIcon: $('quiz-icon'),
-  exampleSentence: $('example-sentence')
+  exampleSentence: $('example-sentence'),
+  soundBar: $('sound-bar')
 };
 
-// ===== Initialize =====
 async function init() {
   await loadWordList();
   loadProgress();
@@ -64,11 +59,9 @@ async function init() {
   startLearning();
 }
 
-// ===== Load Word List =====
 async function loadWordList() {
   const params = new URLSearchParams(window.location.search);
   const wordIdsParam = params.get('words');
-
   if (wordIdsParam) {
     const response = await fetch(CONFIG.wordListFile);
     const allWords = await response.json();
@@ -82,13 +75,11 @@ async function loadWordList() {
   }
 }
 
-// ===== Progress =====
 function loadProgress() {
   const saved = localStorage.getItem(CONFIG.progressKey);
   progress = saved ? JSON.parse(saved) : { words: {}, streak: 0, lastActiveDate: null };
   if (!progress.words) progress.words = {};
   if (!progress.streak) progress.streak = 0;
-  
   const today = new Date().toISOString().split('T')[0];
   if (progress.lastActiveDate === today) { /* OK */ }
   else if (progress.lastActiveDate) {
@@ -119,6 +110,7 @@ function trackPractice(wordId) {
 function startLearning() {
   phase = 'learn';
   currentWordIndex = 0;
+  el.soundBar.style.display = 'flex';
   showLearnSection();
   showWord(currentWordIndex);
 }
@@ -128,13 +120,9 @@ function showWord(index) {
   const word = wordList[index];
   currentWordIndex = index;
 
-  // Word + translation
-  const soundBtn = el.soundIconBtn;
   el.tagalogWord.textContent = word.tagalog;
-  el.tagalogWord.appendChild(soundBtn);
   el.englishTranslation.textContent = `"${word.english}"`;
 
-  // Illustration
   el.illustration.src = `${CONFIG.illustrationBasePath}${word.wordId}.webp`;
   el.illustration.alt = `Illustration for ${word.tagalog}`;
   applyAnimation(word.wordId);
@@ -150,23 +138,18 @@ function showWord(index) {
     if (ph) ph.remove();
   };
 
-  // Audio
   el.audioPlayer.src = `${CONFIG.audioBasePath}${word.wordId}.mp3`;
 
-  // Mastery badge
   const wp = progress.words?.[word.wordId];
   el.phaseBadge.textContent = wp?.mastered ? '⭐ Mastered' : (wp?.timesPracticed ? `🔊 ${wp.timesPracticed}/3` : 'Learn');
 
-  // Progress
   const total = wordList.length;
   el.progressText.textContent = `${index + 1} / ${total}`;
   el.progressFill.style.width = `${((index + 1) / total) * 100}%`;
 
-  // Previous button (only during learn)
   el.prevBtn.style.display = index > 0 ? 'block' : 'none';
-  el.nextBtn.textContent = index < total - 1 ? 'Next →' : 'Next →';
+  el.nextBtn.textContent = 'Next →';
 
-  // Example sentence
   if (word.exampleTagalog && word.exampleEnglish) {
     document.querySelector('#example-sentence .tagalog-text').textContent = word.exampleTagalog;
     document.querySelector('#example-sentence .english-text').textContent = word.exampleEnglish;
@@ -174,17 +157,19 @@ function showWord(index) {
   } else {
     el.exampleSentence.style.display = 'none';
   }
+
+  // Show sound bar for learn phase
+  el.soundBar.style.display = 'flex';
 }
 
 // =====================================================================
-//  PHASE 2 & 3: QUIZ (Easy then Hard)
+//  PHASE 2 & 3: QUIZ
 // =====================================================================
 
 function startQuiz(difficulty) {
   phase = difficulty === 'hard' ? 'quiz-hard' : 'quiz-easy';
   answered = false;
-  // Reset accumulated answers when starting a fresh Easy quiz
-  if (difficulty === 'easy') allQuizAnswers = [];
+  if (difficulty === 'easy') allQuizAnswers = {};
   const count = 5;
   quiz = new QuizEngine(wordList, difficulty, count);
 
@@ -195,31 +180,21 @@ function startQuiz(difficulty) {
 function showQuizQuestion() {
   const q = quiz.getCurrentQuestion();
   if (!q) {
-    // Quiz ended → transition to next phase
-    if (phase === 'quiz-easy') {
-      // Auto-start hard quiz
-      startQuiz('hard');
-    } else {
-      showCongrats();
-    }
+    if (phase === 'quiz-easy') startQuiz('hard');
+    else showCongrats();
     return;
   }
 
   answered = false;
-
-  // Progress
   const pg = quiz.getProgress();
   el.progressText.textContent = `${pg.current} / ${pg.total}`;
   el.progressFill.style.width = `${pg.percentage}%`;
 
-  // Show quiz section, hide learn
   showQuizSection();
 
-  // Question stem
   const typeIcon = { 'word-match': '', 'translation-match': '', 'audio-quiz': '🔊 ', 'image-quiz': '📷 ' };
   el.questionStem.textContent = (typeIcon[q.type] || '') + q.stem;
 
-  // Quiz icon
   const icons = { 'word-match': '📝', 'translation-match': '📝', 'audio-quiz': '🔊', 'image-quiz': '📷' };
   el.quizIcon.textContent = icons[q.type] || '📝';
 
@@ -233,7 +208,6 @@ function showQuizQuestion() {
   }
   el.quizIcon.innerHTML = mediaHtml || '📝';
 
-  // Choices
   el.choices.innerHTML = '';
   el.feedback.textContent = '';
   el.feedback.className = 'feedback';
@@ -245,6 +219,10 @@ function showQuizQuestion() {
     btn.onclick = () => selectQuizAnswer(i);
     el.choices.appendChild(btn);
   });
+
+  // Prev button: show on questions 2+ (not first question)
+  el.prevBtn.style.display = pg.current > 1 ? 'block' : 'none';
+  el.soundBar.style.display = 'none';
 }
 
 function selectQuizAnswer(index) {
@@ -254,11 +232,9 @@ function selectQuizAnswer(index) {
   const result = quiz.answer(index);
   if (!result) return;
 
-  // Accumulate answer across both quiz rounds
-  allQuizAnswers.push({
-    wordId: result.wordId,
-    correct: result.correct
-  });
+  // Store in map (replaces if re-answered after going back)
+  const key = phase + '-' + quiz.currentIndex;
+  allQuizAnswers[key] = { wordId: result.wordId, correct: result.correct };
 
   const btns = document.querySelectorAll('.choice-btn');
   btns.forEach(b => b.disabled = true);
@@ -273,8 +249,6 @@ function selectQuizAnswer(index) {
     el.feedback.textContent = `❌ The answer was: ${quiz.getCurrentQuestion().choices[result.correctIndex]}`;
     el.feedback.className = 'feedback wrong';
   }
-
-  // Next button shows automatically
 }
 
 // =====================================================================
@@ -291,9 +265,10 @@ function showCongrats() {
   el.quizSection.style.display = 'none';
   el.congratsSection.style.display = 'flex';
   el.nextBtn.style.display = 'none';
+  el.prevBtn.style.display = 'none';
+  el.soundBar.style.display = 'none';
 
-  // Combine easy + hard results
-  const allAnswers = allQuizAnswers;
+  const allAnswers = Object.values(allQuizAnswers);
   const correct = allAnswers.filter(a => a.correct).length;
   const total = allAnswers.length;
   const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
@@ -310,7 +285,6 @@ function showCongrats() {
     el.congratsScore.style.color = '#D0021B';
   }
 
-  // Per-word breakdown
   const detail = el.congratsDetail;
   detail.innerHTML = '<h3 style="font-size:0.9rem;margin-bottom:0.5rem;opacity:0.7;">Words:</h3>';
   const wordResults = {};
@@ -332,7 +306,7 @@ function showCongrats() {
 }
 
 // =====================================================================
-//  NAVIGATION — Single "Next" button handles everything
+//  NAVIGATION
 // =====================================================================
 
 function onNextClick() {
@@ -341,24 +315,33 @@ function onNextClick() {
       if (currentWordIndex < wordList.length - 1) {
         showWord(currentWordIndex + 1);
       } else {
-        // Last word → auto-transition to quiz
         startQuiz('easy');
       }
       break;
-
     case 'quiz-easy':
     case 'quiz-hard':
       const nextQ = quiz.nextQuestion();
-      if (nextQ) {
-        showQuizQuestion();
-      } else {
-        // Quiz ended → auto-transition to hard or congrats
-        if (phase === 'quiz-easy') {
-          startQuiz('hard');
-        } else {
-          showCongrats();
-        }
+      if (nextQ) showQuizQuestion();
+      else {
+        if (phase === 'quiz-easy') startQuiz('hard');
+        else showCongrats();
       }
+      break;
+  }
+}
+
+function onPrevClick() {
+  switch (phase) {
+    case 'learn':
+      if (currentWordIndex > 0) showWord(currentWordIndex - 1);
+      break;
+    case 'quiz-easy':
+    case 'quiz-hard':
+      // Remove current answer from accumulated map
+      const key = phase + '-' + quiz.currentIndex;
+      delete allQuizAnswers[key];
+      const prevQ = quiz.prevQuestion();
+      if (prevQ) showQuizQuestion();
       break;
   }
 }
@@ -381,11 +364,10 @@ function showQuizSection() {
   el.congratsSection.style.display = 'none';
   el.nextBtn.style.display = 'block';
   el.nextBtn.textContent = 'Next →';
-  el.prevBtn.style.display = 'none';
 }
 
 // =====================================================================
-//  ANIMATIONS (unchanged from v2)
+//  ANIMATIONS
 // =====================================================================
 
 const ANIMATION_DEFS = {
@@ -394,17 +376,11 @@ const ANIMATION_DEFS = {
   'magandang-umaga':{ imgClass: '',                       overlays: [{ class: 'overlay-sun', text: '☀️', top: '3%', left: '10%', right: 'auto', bottom: 'auto' }] },
   'paalam':         { imgClass: 'img-anim-bounce',       overlays: [{ class: 'overlay-waving', text: '👋', top: '5%', right: '10%', left: 'auto', bottom: 'auto' }] },
   'magandang-hapon':{ imgClass: 'img-anim-bounce-fast',  overlays: [] },
-  'magandang-gabi': { imgClass: '',                       overlays: [
-    { class: 'overlay-star',   text: '⭐', top: '5%',  left: '15%', right: 'auto', bottom: 'auto' },
-    { class: 'overlay-star-2', text: '✨', top: '10%', right: '12%', left: 'auto', bottom: 'auto' }
-  ]},
+  'magandang-gabi': { imgClass: '',                       overlays: [{ class: 'overlay-star', text: '⭐', top: '5%', left: '15%', right: 'auto', bottom: 'auto' }, { class: 'overlay-star-2', text: '✨', top: '10%', right: '12%', left: 'auto', bottom: 'auto' }] },
   'magandang-araw': { imgClass: '',                       overlays: [{ class: 'overlay-rainbow overlay-rainbow-anim', text: '🌈', bottom: '5%', left: '10%', top: 'auto', right: 'auto' }] },
   'tuloy-kayo':     { imgClass: 'img-anim-breathe',      overlays: [] },
   'hanggang-sa-muli':{ imgClass: 'img-anim-bounce',      overlays: [{ class: 'overlay-float-hearts', text: '💕', bottom: '10%', left: '50%', top: 'auto', right: 'auto' }] },
-  'kumain-ka-na':   { imgClass: '',                       overlays: [
-    { class: 'overlay-steam',   text: '💨', top: '8%',  left: '45%', right: 'auto', bottom: 'auto' },
-    { class: 'overlay-steam-2', text: '💨', top: '12%', left: '55%', right: 'auto', bottom: 'auto' }
-  ]},
+  'kumain-ka-na':   { imgClass: '',                       overlays: [{ class: 'overlay-steam', text: '💨', top: '8%', left: '45%', right: 'auto', bottom: 'auto' }, { class: 'overlay-steam-2', text: '💨', top: '12%', left: '55%', right: 'auto', bottom: 'auto' }] },
   'saan-pupunta':   { imgClass: 'img-anim-slide',        overlays: [] }
 };
 
@@ -412,52 +388,37 @@ function applyAnimation(wordId) {
   el.illustration.className = 'illustration';
   const overlays = el.characterScene.querySelectorAll('.animation-overlay');
   overlays.forEach(o => o.remove());
-  
   const key = wordId.split('-').slice(3).join('-');
   const def = ANIMATION_DEFS[key];
   if (!def) return;
-  
   el.illustration.style.animation = '';
   if (def.imgClass) {
-    const map = {
-      'img-anim-bounce': 'bounce-gentle 2s ease-in-out infinite',
-      'img-anim-bounce-fast': 'bounce-gentle 1.5s ease-in-out infinite',
-      'img-anim-breathe': 'breathe 2.5s ease-in-out infinite',
-      'img-anim-slide': 'slide-side 2s ease-in-out infinite alternate',
-    };
+    const map = { 'img-anim-bounce': 'bounce-gentle 2s ease-in-out infinite', 'img-anim-bounce-fast': 'bounce-gentle 1.5s ease-in-out infinite', 'img-anim-breathe': 'breathe 2.5s ease-in-out infinite', 'img-anim-slide': 'slide-side 2s ease-in-out infinite alternate' };
     if (map[def.imgClass]) el.illustration.style.animation = map[def.imgClass];
   }
   def.overlays.forEach(o => {
     const span = document.createElement('span');
-    span.className = `animation-overlay ${o.class}`;
-    span.textContent = o.text;
-    span.style.top = o.top || 'auto';
-    span.style.left = o.left || 'auto';
-    span.style.right = o.right || 'auto';
-    span.style.bottom = o.bottom || 'auto';
+    span.className = `animation-overlay ${o.class}`; span.textContent = o.text;
+    span.style.top = o.top || 'auto'; span.style.left = o.left || 'auto';
+    span.style.right = o.right || 'auto'; span.style.bottom = o.bottom || 'auto';
     el.characterScene.appendChild(span);
   });
 }
 
-// ===== Audio Playback =====
 function playAudio() {
   if (!el.audioPlayer.src) return;
   const word = wordList[currentWordIndex];
   if (word) trackPractice(word.wordId);
-  
   el.audioPlayer.play().then(() => {
     el.soundIconBtn.classList.add('playing');
     el.audioPlayer.onended = () => el.soundIconBtn.classList.remove('playing');
   }).catch(() => {});
 }
 
-// ===== Event Listeners =====
 function setupEventListeners() {
   el.soundIconBtn.addEventListener('click', e => { e.stopPropagation(); playAudio(); });
   el.nextBtn.addEventListener('click', onNextClick);
-  el.prevBtn.addEventListener('click', () => {
-    if (phase === 'learn' && currentWordIndex > 0) showWord(currentWordIndex - 1);
-  });
+  el.prevBtn.addEventListener('click', onPrevClick);
 
   document.addEventListener('keydown', e => {
     if (e.key === 'ArrowRight' || e.key === ' ') {
@@ -465,16 +426,14 @@ function setupEventListeners() {
       if (phase === 'learn' && el.nextBtn.disabled) return;
       onNextClick();
     }
-    if (e.key === 'ArrowLeft' && phase === 'learn') {
-      if (currentWordIndex > 0) showWord(currentWordIndex - 1);
+    if (e.key === 'ArrowLeft') {
+      onPrevClick();
     }
   });
 }
 
-// ===== Start =====
 document.addEventListener('DOMContentLoaded', init);
 
-// Audio element for quiz
 const quizAudio = document.createElement('audio');
 quizAudio.id = 'quiz-audio';
 document.body.appendChild(quizAudio);

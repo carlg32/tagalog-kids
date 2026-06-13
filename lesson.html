@@ -32,12 +32,7 @@
         <img src="" alt="Illustration" class="illustration" id="illustration">
       </div>
       <div class="word-display">
-        <h1 class="tagalog-word" id="tagalog-word">
-          Kumusta
-          <button class="sound-icon-btn" id="sound-icon-btn" aria-label="Play pronunciation">
-            <span class="sound-icon">🔊</span>
-          </button>
-        </h1>
+        <h1 class="tagalog-word" id="tagalog-word">Kumusta</h1>
         <p class="english-translation" id="english-translation">"How are you?"</p>
       </div>
       <div class="example-sentence" id="example-sentence">
@@ -63,10 +58,19 @@
       <a href="index.html" class="nav-btn" style="text-decoration:none;display:inline-block;padding:0.8rem 2rem;margin-top:1rem;">🏠 Back to Menu</a>
     </main>
 
-    <!-- Footer: Previous (learn) + Next -->
+    <!-- Footer: Sound Bar + Navigation -->
     <footer class="slide-footer">
-      <button class="nav-btn prev-btn" id="prev-btn" style="display:none">← Back</button>
-      <button class="nav-btn next-btn" id="next-btn">Next →</button>
+      <!-- Sound bar (centered above nav) -->
+      <div class="sound-bar" id="sound-bar">
+        <button class="sound-btn" id="sound-icon-btn" aria-label="Play pronunciation">
+          <span class="sound-icon">🔊</span>
+        </button>
+      </div>
+      <!-- Navigation -->
+      <div class="nav-row">
+        <button class="nav-btn prev-btn" id="prev-btn" style="display:none">← Back</button>
+        <button class="nav-btn next-btn" id="next-btn">Next →</button>
+      </div>
     </footer>
 
   </div>
