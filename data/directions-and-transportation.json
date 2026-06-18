@@ -1,0 +1,62 @@
+[
+  {
+    "wordId": "directions-01-kanan",
+    "tagalog": "Kanan",
+    "english": "Right",
+    "category": "directions",
+    "tags": ["directions"],
+    "recommendedGrade": 1,
+    "difficultyLevel": 1,
+    "frequency": "high",
+    "exampleSentenceTagalog": "Kanan ka.",
+    "exampleSentenceEnglish": "Turn right.",
+    "pronunciationNotes": "KA-nan",
+    "culturalNotes": "",
+    "excludeable": true
+  },
+  {
+    "wordId": "directions-02-kaliwa",
+    "tagalog": "Kaliwa",
+    "english": "Left",
+    "category": "directions",
+    "tags": ["directions"],
+    "recommendedGrade": 1,
+    "difficultyLevel": 1,
+    "frequency": "high",
+    "exampleSentenceTagalog": "Kaliwa ka.",
+    "exampleSentenceEnglish": "Turn left.",
+    "pronunciationNotes": "ka-LI-wa",
+    "culturalNotes": "",
+    "excludeable": true
+  },
+  {
+    "wordId": "directions-03-diretso",
+    "tagalog": "Diretso",
+    "english": "Straight",
+    "category": "directions",
+    "tags": ["directions"],
+    "recommendedGrade": 1,
+    "difficultyLevel": 1,
+    "frequency": "high",
+    "exampleSentenceTagalog": "Diretso lang.",
+    "exampleSentenceEnglish": "Go straight.",
+    "pronunciationNotes": "di-RET-so",
+    "culturalNotes": "",
+    "excludeable": true
+  },
+  {
+    "wordId": "directions-04-hinto",
+    "tagalog": "Hinto",
+    "english": "Stop",
+    "category": "directions",
+    "tags": ["directions"],
+    "recommendedGrade": 1,
+    "difficultyLevel": 1,
+    "frequency": "high",
+    "exampleSentenceTagalog": "Hinto!",
+    "exampleSentenceEnglish": "Stop!",
+    "pronunciationNotes": "HIN-to",
+    "culturalNotes": "",
+    "excludeable": true
+  }
+]

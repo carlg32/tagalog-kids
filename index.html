@@ -38,279 +38,99 @@
       text-align: center;
     }
     .logo { font-size: 4rem; margin-bottom: 0.3rem; }
-    h1 {
-      font-size: 2.5rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin-bottom: 0.3rem;
+    h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .subtitle { color: var(--text-light); margin-bottom: 2rem; }
+    .start-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 1rem 3rem;
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+      transition: transform 0.2s;
     }
-    .subtitle {
-      font-size: 1rem;
-      color: var(--text-light);
-      margin-bottom: 1.5rem;
-    }
-
-    /* Stats */
+    .start-btn:hover { transform: translateY(-2px); }
     .stats {
       display: flex;
       justify-content: center;
-      gap: 1.5rem;
-      margin-bottom: 1.5rem;
-      padding: 1rem;
-      background: #F8F8F8;
-      border-radius: 1rem;
+      gap: 2rem;
+      margin: 2rem 0;
     }
-    .stat { text-align: center; }
-    .stat-value {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: var(--primary);
-    }
-    .stat-label { font-size: 0.75rem; color: var(--text-light); }
-
-    /* Config Section */
-    .config-section {
-      background: #F8F8F8;
-      border-radius: 1rem;
-      padding: 1.2rem;
-      margin-bottom: 1.5rem;
-      text-align: left;
-    }
-    .config-title {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 0.8rem;
-    }
-    .config-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 0.6rem;
-    }
-    .config-row label {
+    .stat-item { text-align: center; }
+    .stat-number { font-size: 1.8rem; font-weight: 800; color: var(--primary); }
+    .stat-label { font-size: 0.8rem; color: var(--text-light); }
+    .config { background: #f8f9fa; border-radius: 16px; padding: 1rem; margin: 1.5rem 0; }
+    .config-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; }
+    .config-row label { font-size: 0.85rem; font-weight: 600; }
+    .config-row select, .config-row input { padding: 0.3rem 0.5rem; border: 2px solid #ddd; border-radius: 8px; }
+    .parent-link {
+      margin-top: 2rem;
       font-size: 0.85rem;
-      color: var(--text);
-      font-weight: 600;
     }
-    .config-row select,
-    .config-row input[type="number"] {
-      font-family: 'Nunito', sans-serif;
-      font-size: 0.85rem;
-      padding: 0.3rem 0.5rem;
-      border: 2px solid #DDD;
-      border-radius: 8px;
-      background: white;
-      color: var(--text);
-      width: 80px;
-      text-align: center;
+    .parent-link a {
+      color: #6c757d;
+      text-decoration: none;
     }
-    .config-row select { width: auto; }
-    .category-tag {
-      display: inline-block;
-      background: var(--primary);
-      color: white;
-      font-size: 0.75rem;
-      padding: 0.2rem 0.6rem;
-      border-radius: 12px;
-      margin: 0.2rem;
-    }
-    .categories-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      margin-top: 0.4rem;
-    }
-
-    /* Start Button */
-    .start-btn {
-      background: var(--green);
-      color: var(--white);
-      border: none;
-      padding: 1rem 2.5rem;
-      border-radius: 50px;
-      font-size: 1.3rem;
-      font-weight: 800;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-      font-family: 'Nunito', sans-serif;
-      width: 100%;
-      box-shadow: 0 4px 12px rgba(126, 211, 33, 0.3);
-    }
-    .start-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(126, 211, 33, 0.4);
-    }
-    .start-btn:active { transform: translateY(0); }
-    .start-btn small {
-      display: block;
-      font-weight: 400;
-      font-size: 0.85rem;
-      opacity: 0.85;
-      margin-top: 0.2rem;
-    }
-
-    .footer {
-      font-size: 0.75rem;
-      color: var(--text-light);
-      margin-top: 1.2rem;
-    }
-    .reset-link {
-      font-size: 0.75rem;
-      color: var(--text-light);
-      text-decoration: underline;
-      cursor: pointer;
-      margin-top: 0.5rem;
-      display: inline-block;
-    }
-    .reset-link:hover { color: var(--danger); }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="logo">🇵🇭</div>
     <h1>Tagalog Kids</h1>
-    <p class="subtitle">Matutong mag-Tagalog! — Learn Tagalog!</p>
+    <p class="subtitle">Learn Tagalog with fun!</p>
 
-    <!-- Stats -->
+    <button class="start-btn" id="start-btn">Start Lesson</button>
+
     <div class="stats">
-      <div class="stat">
-        <div class="stat-value" id="words-practiced">0</div>
-        <div class="stat-label">Words Practiced</div>
+      <div class="stat-item">
+        <div class="stat-number" id="words-practiced">0</div>
+        <div class="stat-label">Practiced</div>
       </div>
-      <div class="stat">
-        <div class="stat-value" id="words-mastered">0</div>
-        <div class="stat-label">Mastered ⭐</div>
+      <div class="stat-item">
+        <div class="stat-number" id="words-mastered">0</div>
+        <div class="stat-label">Mastered</div>
       </div>
-      <div class="stat">
-        <div class="stat-value" id="day-streak">0</div>
+      <div class="stat-item">
+        <div class="stat-number" id="day-streak">0</div>
         <div class="stat-label">Day Streak</div>
       </div>
     </div>
 
-    <!-- Config Panel -->
-    <div class="config-section">
-      <div class="config-title">🎯 Session Settings</div>
-
+    <div class="config">
       <div class="config-row">
         <label>Words per session</label>
-        <input type="number" id="words-per-session" value="5" min="3" max="11">
-      </div>
-
-      <div class="config-row">
-        <label>Categories</label>
-        <div style="font-size:0.85rem;color:var(--text-light);">All greetings</div>
-      </div>
-      <div class="categories-list">
-        <span class="category-tag">Greetings (11 words)</span>
-      </div>
-
-      <div class="config-row" style="margin-top:0.8rem;">
-        <label>Include mastered words</label>
-        <input type="checkbox" id="include-mastered" checked style="width:auto;">
+        <input type="number" id="words-per-session" value="5" min="3" max="10">
       </div>
     </div>
 
-    <!-- Action Buttons -->
-    <button class="start-btn" id="start-btn">
-      📖 Start Learning
-      <small>5 words · smart selection</small>
-    </button>
+    <p style="font-size: 0.75rem; color: var(--text-light);">
+      AI will choose the best words for you based on your progress.
+    </p>
 
-    <!-- Reset -->
-    <div class="reset-link" id="reset-link">Reset all progress</div>
-    <div class="footer">Made with ❤️ for kids learning Tagalog</div>
+    <div class="parent-link">
+      <a href="parent-dashboard.html">Parent Dashboard (Customize Words)</a>
+    </div>
   </div>
 
-  <script src="js/word-selector.js"></script>
   <script>
-    // ===== Load Word List =====
-    let allWords = [];
-
-    async function loadWordList() {
-      try {
-        const res = await fetch('data/word-list-grade1-greetings-all.json');
-        allWords = await res.json();
-        updateStats();
-      } catch(e) {
-        console.error('Failed to load words:', e);
-      }
-    }
-
-    // ===== Update Stats =====
+    // Basic stats loading (placeholder)
     function updateStats() {
-      try {
-        const saved = localStorage.getItem('tagalog-kids-progress');
-        if (saved) {
-          const p = JSON.parse(saved);
-          const words = p.words || {};
-          const practiced = Object.values(words).filter(w => w.timesPracticed > 0).length;
-          const mastered = Object.values(words).filter(w => w.mastered).length;
-          document.getElementById('words-practiced').textContent = practiced;
-          document.getElementById('words-mastered').textContent = mastered;
-          document.getElementById('day-streak').textContent = p.streak || 0;
-        }
-      } catch(e) {}
-
-      // Update button text with word count
-      const count = parseInt(document.getElementById('words-per-session').value) || 5;
-      document.querySelector('.start-btn small').textContent = `${count} words · smart selection`;
+      const progress = JSON.parse(localStorage.getItem('tagalog-kids-progress') || '{}');
+      document.getElementById('words-practiced').textContent = progress.practiced || 0;
+      document.getElementById('words-mastered').textContent = progress.mastered || 0;
+      document.getElementById('day-streak').textContent = progress.streak || 0;
     }
 
-    // ===== Start Session =====
     function startSession() {
-      if (allWords.length === 0) {
-        alert('Words not loaded yet. Please try again.');
-        return;
-      }
-
-      // Read config
-      const wordsPerSession = parseInt(document.getElementById('words-per-session').value) || 5;
-      const includeMastered = document.getElementById('include-mastered').checked;
-
-      // Read progress
-      let progress = {};
-      try {
-        const saved = localStorage.getItem('tagalog-kids-progress');
-        if (saved) progress = JSON.parse(saved);
-      } catch(e) {}
-
-      // Generate session
-      const config = {
-        wordsPerSession: wordsPerSession,
-        masteredCooldownDays: includeMastered ? 0 : 7
-      };
-
-      const sessionWords = WordSelector.generateSession(allWords, progress, config);
-
-      if (sessionWords.length === 0) {
-        alert('No words available for this session.');
-        return;
-      }
-
-      // Redirect to lesson with word IDs
-      const wordIds = sessionWords.join(',');
-      window.location.href = `lesson.html?words=${encodeURIComponent(wordIds)}`;
+      const wordsPerSession = document.getElementById('words-per-session').value;
+      window.location.href = `lesson-v2.html?words=${wordsPerSession}`;
     }
 
-    // ===== Reset Progress =====
-    function resetProgress() {
-      if (confirm('Reset all progress? This cannot be undone.')) {
-        localStorage.removeItem('tagalog-kids-progress');
-        document.getElementById('words-practiced').textContent = '0';
-        document.getElementById('words-mastered').textContent = '0';
-        document.getElementById('day-streak').textContent = '0';
-      }
-    }
-
-    // ===== Update on config change =====
-    document.getElementById('words-per-session').addEventListener('input', updateStats);
     document.getElementById('start-btn').addEventListener('click', startSession);
-    document.getElementById('reset-link').addEventListener('click', resetProgress);
-
-    // ===== Init =====
     updateStats();
-    loadWordList();
   </script>
 </body>
 </html>

@@ -1,14 +1,11 @@
 /**
- * word-selector.js — Dynamic Word Selection Engine
- * 
- * Picks words based on sound-click tracking so kids don't repeat:
- *   1. Unpracticed words first (never clicked 🔊)
- *   2. Practiced < 3 times (still learning)
- *   3. Mastered (≥3 practices) → cooldown 7 days, then spiral review
- * 
- * Usage:
- *   const session = WordSelector.generateSession(allWords, progress, config);
- *   // → ["greetings-01-...", "greetings-05-...", ...]
+ * word-selector.js — Dynamic Word Selection Engine (Updated)
+ *
+ * Supports the new flexible word list schema with:
+ * - tags[]
+ * - excludeable
+ * - difficultyLevel
+ * - User exclusions (from progress.excludedWords)
  */
 
 const WordSelector = {
@@ -17,30 +14,33 @@ const WordSelector = {
     wordsPerSession: 5,
     masteredCooldownDays: 7,
     maxPerSession: 3,
-    reviewRatio: 0.3  // 30% mastered words for spiral review
+    reviewRatio: 0.3
   },
 
   /**
    * Generate a session word list.
-   * @param {Array} allWords - Full word list from JSON
-   * @param {Object} progress - Progress from localStorage
-   * @param {Object} config - User config (wordsPerSession, categories, etc.)
-   * @returns {Array<string>} Ordered array of wordIds for this session
    */
   generateSession(allWords, progress, config = {}) {
     const cfg = { ...this.DEFAULTS, ...config };
-    const today = new Date().toISOString().split('T')[0];
     const wordProgress = progress?.words || {};
+    const excluded = progress?.excludedWords || [];
 
-    // Categorize each word
-    const unpracticed = [];   // never clicked 🔊
-    const learning = [];      // clicked < 3 times
-    const mastered = [];      // clicked ≥ 3 times
+    const unpracticed = [];
+    const learning = [];
+    const mastered = [];
 
-    // Filter by user's selected categories (if any)
-    const filtered = cfg.categories && cfg.categories.length > 0
-      ? allWords.filter(w => cfg.categories.includes(w.category))
-      : allWords;
+    // Filter words
+    const filtered = allWords.filter(word => {
+      if (cfg.categories && cfg.categories.length > 0) {
+        if (!cfg.categories.includes(word.category)) return false;
+      }
+      if (cfg.tags && cfg.tags.length > 0) {
+        if (!word.tags || !word.tags.some(t => cfg.tags.includes(t))) return false;
+      }
+      if (word.excludeable === false) return false;
+      if (excluded.includes(word.wordId)) return false;
+      return true;
+    });
 
     for (const word of filtered) {
       const wp = wordProgress[word.wordId];
@@ -53,46 +53,47 @@ const WordSelector = {
       }
     }
 
-    // Shuffle within each tier
     this._shuffle(unpracticed);
     this._shuffle(learning);
     this._shuffle(mastered);
 
-    // Filter mastered: exclude recent (within cooldown)
+    // Cooldown filter for mastered words
     const cooldownMs = cfg.masteredCooldownDays * 24 * 60 * 60 * 1000;
     const now = Date.now();
     const masteredAvailable = mastered.filter(id => {
       const wp = wordProgress[id];
+      if (!wp?.lastPracticed) return true;
       const last = new Date(wp.lastPracticed).getTime();
       return (now - last) >= cooldownMs;
     });
 
-    // Build session: fill slots with priority order
     const maxSlots = cfg.wordsPerSession;
     const session = [];
 
-    // 1. Fill with unpracticed first
+    // 1. Unpracticed first
     for (const id of unpracticed) {
       if (session.length >= maxSlots) break;
       session.push(id);
     }
 
-    // 2. Add learning words
+    // 2. Learning
     for (const id of learning) {
       if (session.length >= maxSlots) break;
       session.push(id);
     }
 
-    // 3. Add mastered (spiral review) up to reviewRatio
+    // 3. Spiral review (mastered)
     const reviewCount = Math.floor(maxSlots * cfg.reviewRatio);
+    let reviewAdded = 0;
     for (const id of masteredAvailable) {
-      if (session.length >= maxSlots || session.filter(w => masteredAvailable.includes(w)).length >= reviewCount) break;
+      if (session.length >= maxSlots || reviewAdded >= reviewCount) break;
       session.push(id);
+      reviewAdded++;
     }
 
-    // If still under maxSlots, add more learning/unpracticed
+    // Fill remaining slots
     if (session.length < maxSlots) {
-      const remaining = [...learning, ...unpracticed].filter(id => !session.includes(id));
+      const remaining = [...unpracticed, ...learning].filter(id => !session.includes(id));
       for (const id of remaining) {
         if (session.length >= maxSlots) break;
         session.push(id);
@@ -102,15 +103,10 @@ const WordSelector = {
     return session;
   },
 
-  /**
-   * Track a word practice (called when sound is clicked)
-   * @param {string} wordId
-   * @param {Object} progress - Progress object (mutated in-place)
-   */
   trackPractice(wordId, progress) {
     if (!progress.words) progress.words = {};
     if (!progress.words[wordId]) {
-      progress.words[wordId] = { timesPracticed: 0, mastered: false };
+      progress.words[wordId] = { timesPracticed: 0 };
     }
     const wp = progress.words[wordId];
     wp.lastPracticed = new Date().toISOString();
@@ -118,12 +114,6 @@ const WordSelector = {
     wp.mastered = wp.timesPracticed >= 3;
   },
 
-  /**
-   * Get stats for the dashboard
-   * @param {Object} progress
-   * @param {Array} allWords
-   * @returns {Object} { learned: number, total: number, streak: number, ... }
-   */
   getStats(progress, allWords) {
     const wp = progress?.words || {};
     const practiced = Object.values(wp).filter(w => w.timesPracticed > 0).length;
@@ -136,7 +126,6 @@ const WordSelector = {
     };
   },
 
-  /** Fisher-Yates shuffle (in-place) */
   _shuffle(arr) {
     for (let i = arr.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -145,7 +134,6 @@ const WordSelector = {
   }
 };
 
-// Export for module use
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { WordSelector };
 }

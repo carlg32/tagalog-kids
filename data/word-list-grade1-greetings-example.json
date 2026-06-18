@@ -1,0 +1,48 @@
+[
+  {
+    "wordId": "greetings-01-female-kumusta",
+    "tagalog": "Kumusta",
+    "english": "How are you?",
+    "grade": 1,
+    "category": "greetings",
+    "subcategory": "basic-greetings",
+    "frequency": "high",
+    "difficulty": "easy",
+    "exampleSentenceTagalog": "Kumusta ka?",
+    "exampleSentenceEnglish": "How are you?",
+    "pronunciationNotes": "Stress on second syllable: ku-MUS-ta",
+    "culturalNotes": "Most common casual greeting. Can be used any time of day.",
+    "image": {
+      "filename": "greetings-01-female-kumusta.webp",
+      "prompt": "A friendly young Filipino girl waving hello, bright cheerful illustration, kid-friendly style, clean background",
+      "style": "kid-friendly-illustration"
+    },
+    "audio": {
+      "filename": "greetings-01-female-kumusta.mp3",
+      "ssml": "<speak>Kumusta<break time=\"200ms\"/></speak>"
+    }
+  },
+  {
+    "wordId": "greetings-02-female-salamat",
+    "tagalog": "Salamat",
+    "english": "Thank you",
+    "grade": 1,
+    "category": "greetings",
+    "subcategory": "basic-greetings",
+    "frequency": "high",
+    "difficulty": "easy",
+    "exampleSentenceTagalog": "Salamat po.",
+    "exampleSentenceEnglish": "Thank you (polite).",
+    "pronunciationNotes": "sa-LA-mat",
+    "culturalNotes": "Add 'po' for respect when speaking to elders.",
+    "image": {
+      "filename": "greetings-02-female-salamat.webp",
+      "prompt": "A happy child saying thank you with hands together, warm and grateful expression, kid illustration style",
+      "style": "kid-friendly-illustration"
+    },
+    "audio": {
+      "filename": "greetings-02-female-salamat.mp3",
+      "ssml": "<speak>Salamat<break time=\"200ms\"/></speak>"
+    }
+  }
+]

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tagalog Kids - Learn</title>
+  <link rel="stylesheet" href="css/slide-v2.css">
+  <link rel="stylesheet" href="css/animations.css?v=2">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    .sound-centered {
+      display: flex;
+      justify-content: center;
+      margin: 16px 0 24px;
+    }
+    .sound-centered .sound-icon-btn {
+      width: 72px;
+      height: 72px;
+      font-size: 2.2rem;
+      background: #4A90E2;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(74, 144, 226, 0.35);
+      transition: transform 0.2s ease;
+    }
+    .sound-centered .sound-icon-btn:active {
+      transform: scale(0.92);
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container" id="slide-container">
+    
+    <header class="slide-header">
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <span class="progress-text" id="progress-text">1 / 5</span>
+      </div>
+    </header>
+
+    <main class="slide-main">
+      <div class="character-scene" id="character-scene">
+        <img src="" alt="Illustration" class="illustration" id="illustration">
+      </div>
+
+      <div class="word-display">
+        <h1 class="tagalog-word" id="tagalog-word">Isa</h1>
+        <p class="english-translation" id="english-translation">"One"</p>
+        
+        <!-- Sound button - centered and prominent -->
+        <div class="sound-centered">
+          <button class="sound-icon-btn" id="sound-icon-btn" aria-label="Play pronunciation">
+            <span class="sound-icon">🔊</span>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <footer class="slide-footer">
+      <button class="nav-btn prev-btn" id="prev-btn">Back</button>
+      <button class="nav-btn next-btn" id="next-btn">Next →</button>
+    </footer>
+  </div>
+
+  <script src="js/slide-v2.js"></script>
+</body>
+</html>

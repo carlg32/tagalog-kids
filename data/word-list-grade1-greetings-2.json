@@ -1,0 +1,51 @@
+[
+  {
+    "wordId": "greetings-01-female-magandang-hapon",
+    "tagalog": "Magandang hapon",
+    "english": "Good afternoon",
+    "grade": 1,
+    "category": "greetings"
+  },
+  {
+    "wordId": "greetings-02-female-magandang-gabi",
+    "tagalog": "Magandang gabi",
+    "english": "Good evening",
+    "grade": 1,
+    "category": "greetings"
+  },
+  {
+    "wordId": "greetings-03-female-magandang-araw",
+    "tagalog": "Magandang araw",
+    "english": "Good day",
+    "grade": 1,
+    "category": "greetings"
+  },
+  {
+    "wordId": "greetings-04-female-tuloy-kayo",
+    "tagalog": "Tuloy kayo",
+    "english": "Please come in",
+    "grade": 1,
+    "category": "greetings"
+  },
+  {
+    "wordId": "greetings-05-female-hanggang-sa-muli",
+    "tagalog": "Hanggang sa muli",
+    "english": "Until we meet again",
+    "grade": 1,
+    "category": "greetings"
+  },
+  {
+    "wordId": "greetings-06-female-kumain-ka-na",
+    "tagalog": "Kumain ka na?",
+    "english": "Have you eaten?",
+    "grade": 1,
+    "category": "greetings"
+  },
+  {
+    "wordId": "greetings-07-female-saan-pupunta",
+    "tagalog": "Saan pupunta?",
+    "english": "Where are you going?",
+    "grade": 1,
+    "category": "greetings"
+  }
+]

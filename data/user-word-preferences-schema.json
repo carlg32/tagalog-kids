@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "User Word Preferences Schema",
+  "description": "Schema for tracking which words a student/parent has marked as known or excluded. Enables personalized lesson customization.",
+  "type": "object",
+  "properties": {
+    "userId": {
+      "type": "string",
+      "description": "Unique identifier for the child or profile"
+    },
+    "lastUpdated": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "excludedWords": {
+      "type": "array",
+      "description": "Words the user has chosen to exclude from practice",
+      "items": {
+        "type": "object",
+        "properties": {
+          "wordId": { "type": "string" },
+          "reason": {
+            "type": "string",
+            "enum": ["already-knows", "too-easy", "not-relevant", "manual"],
+            "default": "already-knows"
+          },
+          "excludedAt": { "type": "string", "format": "date-time" },
+          "manuallyExcluded": { "type": "boolean", "default": true }
+        },
+        "required": ["wordId"]
+      }
+    },
+    "knownWords": {
+      "type": "array",
+      "description": "Words the system considers the user has mastered (based on practice data)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "wordId": { "type": "string" },
+          "masteryLevel": {
+            "type": "string",
+            "enum": ["learning", "familiar", "mastered"]
+          },
+          "practiceCount": { "type": "integer" },
+          "lastPracticed": { "type": "string", "format": "date-time" }
+        },
+        "required": ["wordId"]
+      }
+    },
+    "customWordLists": {
+      "type": "array",
+      "description": "User-created custom word lists or lesson sets",
+      "items": {
+        "type": "object",
+        "properties": {
+          "listId": { "type": "string" },
+          "name": { "type": "string" },
+          "wordIds": { "type": "array", "items": { "type": "string" } },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  },
+  "required": ["userId"]
+}

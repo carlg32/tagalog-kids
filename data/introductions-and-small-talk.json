@@ -1,0 +1,62 @@
+[
+  {
+    "wordId": "intro-01-ako-si",
+    "tagalog": "Ako si",
+    "english": "I am",
+    "category": "introductions",
+    "tags": ["introductions"],
+    "recommendedGrade": 1,
+    "difficultyLevel": 1,
+    "frequency": "high",
+    "exampleSentenceTagalog": "Ako si Carl.",
+    "exampleSentenceEnglish": "I am Carl.",
+    "pronunciationNotes": "A-ko si",
+    "culturalNotes": "",
+    "excludeable": true
+  },
+  {
+    "wordId": "intro-02-ano-pangalan",
+    "tagalog": "Ano ang pangalan mo?",
+    "english": "What is your name?",
+    "category": "introductions",
+    "tags": ["introductions"],
+    "recommendedGrade": 1,
+    "difficultyLevel": 1,
+    "frequency": "high",
+    "exampleSentenceTagalog": "Ano ang pangalan mo?",
+    "exampleSentenceEnglish": "What is your name?",
+    "pronunciationNotes": "A-no ang pa-nga-LAN mo",
+    "culturalNotes": "",
+    "excludeable": true
+  },
+  {
+    "wordId": "intro-03-saan-nakatira",
+    "tagalog": "Saan ka nakatira?",
+    "english": "Where do you live?",
+    "category": "introductions",
+    "tags": ["introductions"],
+    "recommendedGrade": 2,
+    "difficultyLevel": 2,
+    "frequency": "medium",
+    "exampleSentenceTagalog": "Saan ka nakatira?",
+    "exampleSentenceEnglish": "Where do you live?",
+    "pronunciationNotes": "SA-an ka na-ka-TI-ra",
+    "culturalNotes": "",
+    "excludeable": true
+  },
+  {
+    "wordId": "intro-04-ilang-taon",
+    "tagalog": "Ilang taon ka na?",
+    "english": "How old are you?",
+    "category": "introductions",
+    "tags": ["introductions"],
+    "recommendedGrade": 1,
+    "difficultyLevel": 2,
+    "frequency": "high",
+    "exampleSentenceTagalog": "Ilang taon ka na?",
+    "exampleSentenceEnglish": "How old are you?",
+    "pronunciationNotes": "I-lang TA-on ka NA",
+    "culturalNotes": "",
+    "excludeable": true
+  }
+]

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tagalog Kids - Parent Dashboard</title>
+  <link rel="stylesheet" href="css/slide-v2.css">
+  <style>
+    body { font-family: 'Nunito', sans-serif; padding: 20px; background: #f8f9fa; }
+    .dashboard-container { max-width: 1000px; margin: 0 auto; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .stats-bar {
+      background: white;
+      padding: 16px;
+      border-radius: 12px;
+      display: flex;
+      gap: 30px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .category-card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .category-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .word-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .word-chip {
+      background: #f1f3f5;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .word-chip.excluded {
+      background: #ffe3e3;
+      text-decoration: line-through;
+      opacity: 0.75;
+    }
+    .word-chip.mastered {
+      background: #d4edda;
+    }
+    button {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 600;
+    }
+    .exclude-btn {
+      background: #ff6b6b;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .search-bar {
+      width: 100%;
+      padding: 10px 16px;
+      border: 2px solid #ddd;
+      border-radius: 30px;
+      font-size: 1rem;
+      margin-bottom: 20px;
+    }
+    .action-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .exclude-all { background: #ff6b6b; color: white; }
+    .include-all { background: #6c757d; color: white; }
+    .back-link {
+      color: #4A90E2;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .error {
+      color: #c0392b;
+      background: #ffeaea;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <div class="header">
+      <h1>Parent Dashboard</h1>
+      <div>
+        <a href="index.html" class="back-link">← Back to Start</a>
+        <button onclick="clearAllExclusions()" class="action-btn include-all" style="margin-left: 16px;">Clear All Exclusions</button>
+      </div>
+    </div>
+
+    <div id="error-banner" class="error" style="display:none;"></div>
+
+    <div class="stats-bar">
+      <div><strong>Total Words:</strong> <span id="total-words">0</span></div>
+      <div><strong>Excluded:</strong> <span id="excluded-count">0</span></div>
+      <div><strong>Mastered:</strong> <span id="mastered-count">0</span></div>
+    </div>
+
+    <input type="text" id="search" class="search-bar" placeholder="Search words...">
+
+    <div id="categories-container"></div>
+  </div>
+
+  <script>
+    const categories = [
+      { file: 'numbers.json', name: 'Numbers' },
+      { file: 'colors.json', name: 'Colors' },
+      { file: 'food-and-dining.json', name: 'Food & Dining' },
+      { file: 'animals.json', name: 'Animals' },
+      { file: 'emotions.json', name: 'Emotions' },
+      { file: 'time.json', name: 'Time' },
+      { file: 'shapes.json', name: 'Shapes' },
+      { file: 'family-and-people.json', name: 'Family & People' }
+    ];
+
+    let excludedWords = JSON.parse(localStorage.getItem('excludedWords') || '[]');
+    let progress = JSON.parse(localStorage.getItem('tagalog-kids-progress') || '{}');
+    let wordProgress = progress.words || {};
+
+    function showError(msg) {
+      const banner = document.getElementById('error-banner');
+      banner.style.display = 'block';
+      banner.innerHTML = msg + 
+        '<br><br><strong>Tip:</strong> Run this dashboard using a local server:<br>' +
+        '<code>python -m http.server 8000</code> then open <code>http://localhost:8000/parent-dashboard.html</code>';
+    }
+
+    async function loadDashboard(filter = '') {
+      const container = document.getElementById('categories-container');
+      container.innerHTML = '';
+      let total = 0;
+      let mastered = 0;
+      let hasError = false;
+
+      for (const cat of categories) {
+        try {
+          const res = await fetch(`data/${cat.file}`);
+          if (!res.ok) throw new Error(`Failed to load ${cat.file}`);
+
+          const words = await res.json();
+          total += words.length;
+
+          const filteredWords = words.filter(w =>
+            w.tagalog.toLowerCase().includes(filter.toLowerCase()) ||
+            w.english.toLowerCase().includes(filter.toLowerCase())
+          );
+
+          if (filteredWords.length === 0) continue;
+
+          const card = document.createElement('div');
+          card.className = 'category-card';
+
+          let html = `
+            <div class="category-header">
+              <h3>${cat.name} (${filteredWords.length} words)</h3>
+              <div>
+                <button class="action-btn exclude-all" onclick="excludeAll('${cat.file}', true)">Exclude All</button>
+                <button class="action-btn include-all" onclick="excludeAll('${cat.file}', false)">Include All</button>
+              </div>
+            </div>
+            <div class="word-list">
+          `;
+
+          filteredWords.forEach(word => {
+            const isExcluded = excludedWords.includes(word.wordId);
+            const isMastered = wordProgress[word.wordId]?.mastered;
+            if (isMastered) mastered++;
+
+            let classes = 'word-chip';
+            if (isExcluded) classes += ' excluded';
+            if (isMastered) classes += ' mastered';
+
+            html += `
+              <div class="${classes}">
+                ${word.tagalog} (${word.english})
+                <button class="exclude-btn" onclick="toggleExclude('${word.wordId}', this)">×</button>
+              </div>
+            `;
+          });
+
+          html += `</div>`;
+          card.innerHTML = html;
+          container.appendChild(card);
+
+        } catch (err) {
+          hasError = true;
+          console.error(err);
+        }
+      }
+
+      if (hasError) {
+        showError("Some word lists failed to load. This usually happens when opening the file directly without a server.");
+      }
+
+      document.getElementById('total-words').textContent = total;
+      document.getElementById('excluded-count').textContent = excludedWords.length;
+      document.getElementById('mastered-count').textContent = mastered;
+    }
+
+    function toggleExclude(wordId, btn) {
+      const chip = btn.parentElement;
+      if (excludedWords.includes(wordId)) {
+        excludedWords = excludedWords.filter(id => id !== wordId);
+        chip.classList.remove('excluded');
+      } else {
+        excludedWords.push(wordId);
+        chip.classList.add('excluded');
+      }
+      localStorage.setItem('excludedWords', JSON.stringify(excludedWords));
+      document.getElementById('excluded-count').textContent = excludedWords.length;
+    }
+
+    function excludeAll(filename, shouldExclude) {
+      fetch(`data/${filename}`)
+        .then(res => res.json())
+        .then(words => {
+          words.forEach(word => {
+            if (shouldExclude && !excludedWords.includes(word.wordId)) {
+              excludedWords.push(word.wordId);
+            } else if (!shouldExclude) {
+              excludedWords = excludedWords.filter(id => id !== word.wordId);
+            }
+          });
+          localStorage.setItem('excludedWords', JSON.stringify(excludedWords));
+          loadDashboard(document.getElementById('search').value);
+        });
+    }
+
+    function clearAllExclusions() {
+      if (confirm('Remove all exclusions?')) {
+        excludedWords = [];
+        localStorage.setItem('excludedWords', '[]');
+        loadDashboard(document.getElementById('search').value);
+      }
+    }
+
+    document.getElementById('search').addEventListener('input', (e) => {
+      loadDashboard(e.target.value);
+    });
+
+    loadDashboard();
+  </script>
+</body>
+</html>

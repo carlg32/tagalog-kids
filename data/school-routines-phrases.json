@@ -1,0 +1,62 @@
+[
+  {
+    "wordId": "school-01-gawaing-bahay",
+    "tagalog": "Gawaing bahay",
+    "english": "Homework",
+    "category": "school",
+    "tags": ["school-routines"],
+    "recommendedGrade": 1,
+    "difficultyLevel": 2,
+    "frequency": "high",
+    "exampleSentenceTagalog": "Tapusin mo ang gawaing bahay.",
+    "exampleSentenceEnglish": "Finish your homework.",
+    "pronunciationNotes": "ga-wa-ING ba-HAY",
+    "culturalNotes": "",
+    "excludeable": true
+  },
+  {
+    "wordId": "school-02-makinig",
+    "tagalog": "Makinig",
+    "english": "Listen",
+    "category": "school",
+    "tags": ["school-routines"],
+    "recommendedGrade": 1,
+    "difficultyLevel": 1,
+    "frequency": "high",
+    "exampleSentenceTagalog": "Makinig ka.",
+    "exampleSentenceEnglish": "Listen.",
+    "pronunciationNotes": "ma-KI-nig",
+    "culturalNotes": "",
+    "excludeable": true
+  },
+  {
+    "wordId": "school-03-pumila",
+    "tagalog": "Pumila",
+    "english": "Line up",
+    "category": "school",
+    "tags": ["school-routines"],
+    "recommendedGrade": 1,
+    "difficultyLevel": 2,
+    "frequency": "high",
+    "exampleSentenceTagalog": "Pumila kayo.",
+    "exampleSentenceEnglish": "Line up.",
+    "pronunciationNotes": "pu-MI-la",
+    "culturalNotes": "",
+    "excludeable": true
+  },
+  {
+    "wordId": "school-04-tumahimik",
+    "tagalog": "Tumahimik",
+    "english": "Be quiet",
+    "category": "school",
+    "tags": ["school-routines"],
+    "recommendedGrade": 1,
+    "difficultyLevel": 2,
+    "frequency": "high",
+    "exampleSentenceTagalog": "Tumahimik kayo.",
+    "exampleSentenceEnglish": "Be quiet.",
+    "pronunciationNotes": "tu-ma-HI-mik",
+    "culturalNotes": "",
+    "excludeable": true
+  }
+]

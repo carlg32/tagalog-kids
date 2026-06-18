@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Tagalog Kids Word List Schema v2",
+  "description": "Flexible vocabulary schema for Tagalog Kids. Organized by themes (not strict grades). Supports customization, exclusion, and long-term practice.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["wordId", "tagalog", "english", "category"],
+    "properties": {
+      "wordId": {
+        "type": "string",
+        "description": "Unique identifier. Format: {category}-{slug}"
+      },
+      "tagalog": {
+        "type": "string",
+        "description": "Tagalog word or phrase"
+      },
+      "english": {
+        "type": "string",
+        "description": "English translation"
+      },
+      "category": {
+        "type": "string",
+        "description": "Main thematic category",
+        "examples": ["greetings", "numbers", "colors", "family", "animals", "food", "body", "time", "weather", "school", "daily-routine"]
+      },
+      "tags": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Flexible tags for filtering and thematic grouping",
+        "examples": ["respect-language", "hospitality", "time-based", "family", "daily-life"]
+      },
+      "recommendedGrade": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 6,
+        "description": "Suggested starting grade (flexible — not a hard restriction)"
+      },
+      "difficultyLevel": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 5,
+        "description": "Difficulty independent of grade (1 = easiest)"
+      },
+      "frequency": {
+        "type": "string",
+        "enum": ["high", "medium", "low"],
+        "description": "How commonly used in daily conversation"
+      },
+      "exampleSentenceTagalog": {
+        "type": "string"
+      },
+      "exampleSentenceEnglish": {
+        "type": "string"
+      },
+      "pronunciationNotes": {
+        "type": "string",
+        "description": "Notes for correct pronunciation or SSML"
+      },
+      "culturalNotes": {
+        "type": "string",
+        "description": "Cultural context or usage notes"
+      },
+      "excludeable": {
+        "type": "boolean",
+        "default": true,
+        "description": "Whether parents/students can mark this word as known and exclude it"
+      },
+      "image": {
+        "type": "object",
+        "properties": {
+          "filename": { "type": "string" },
+          "prompt": { "type": "string" },
+          "style": { "type": "string" }
+        }
+      },
+      "audio": {
+        "type": "object",
+        "properties": {
+          "filename": { "type": "string" },
+          "ssml": { "type": "string" }
+        }
+      }
+    }
+  }
+}

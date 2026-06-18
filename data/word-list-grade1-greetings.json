@@ -1,0 +1,266 @@
+[
+  {
+    "wordId": "greetings-01-female-kumusta",
+    "tagalog": "Kumusta",
+    "english": "How are you?",
+    "category": "greetings",
+    "tags": ["basic-greetings", "daily-life"],
+    "recommendedGrade": 1,
+    "difficultyLevel": 1,
+    "frequency": "high",
+    "exampleSentenceTagalog": "Kumusta ka?",
+    "exampleSentenceEnglish": "How are you?",
+    "pronunciationNotes": "Stress on second syllable: ku-MUS-ta",
+    "culturalNotes": "Most common casual greeting. Can be used any time of day.",
+    "excludeable": true,
+    "image": {
+      "filename": "greetings-01-female-kumusta.webp",
+      "prompt": "A friendly young Filipino girl waving hello, bright cheerful illustration, kid-friendly style",
+      "style": "kid-friendly-illustration"
+    },
+    "audio": {
+      "filename": "greetings-01-female-kumusta.mp3",
+      "ssml": "<speak>Kumusta<break time=\"200ms\"/></speak>"
+    }
+  },
+  {
+    "wordId": "greetings-02-female-salamat",
+    "tagalog": "Salamat",
+    "english": "Thank you",
+    "category": "greetings",
+    "tags": ["basic-greetings", "respect-language"],
+    "recommendedGrade": 1,
+    "difficultyLevel": 1,
+    "frequency": "high",
+    "exampleSentenceTagalog": "Salamat po.",
+    "exampleSentenceEnglish": "Thank you (polite).",
+    "pronunciationNotes": "sa-LA-mat",
+    "culturalNotes": "Add 'po' for respect when speaking to elders.",
+    "excludeable": true,
+    "image": {
+      "filename": "greetings-02-female-salamat.webp",
+      "prompt": "A happy child saying thank you with hands together, warm and grateful expression",
+      "style": "kid-friendly-illustration"
+    },
+    "audio": {
+      "filename": "greetings-02-female-salamat.mp3",
+      "ssml": "<speak>Salamat<break time=\"200ms\"/></speak>"
+    }
+  },
+  {
+    "wordId": "greetings-03-female-magandang-umaga",
+    "tagalog": "Magandang umaga",
+    "english": "Good morning",
+    "category": "greetings",
+    "tags": ["time-based-greetings"],
+    "recommendedGrade": 1,
+    "difficultyLevel": 2,
+    "frequency": "high",
+    "exampleSentenceTagalog": "Magandang umaga po.",
+    "exampleSentenceEnglish": "Good morning (polite).",
+    "pronunciationNotes": "ma-gan-DANG u-MA-ga",
+    "culturalNotes": "Used until around 10-11 AM. 'Po' shows respect to elders.",
+    "excludeable": true,
+    "image": {
+      "filename": "greetings-03-female-magandang-umaga.webp",
+      "prompt": "A bright morning scene with a smiling child, sun rising, cheerful kid illustration",
+      "style": "kid-friendly-illustration"
+    },
+    "audio": {
+      "filename": "greetings-03-female-magandang-umaga.mp3",
+      "ssml": "<speak>Magandang umaga<break time=\"200ms\"/></speak>"
+    }
+  },
+  {
+    "wordId": "greetings-04-female-paalam",
+    "tagalog": "Paalam",
+    "english": "Goodbye",
+    "category": "greetings",
+    "tags": ["basic-greetings", "goodbyes"],
+    "recommendedGrade": 1,
+    "difficultyLevel": 2,
+    "frequency": "high",
+    "exampleSentenceTagalog": "Paalam na po.",
+    "exampleSentenceEnglish": "Goodbye (polite).",
+    "pronunciationNotes": "pa-A-lam (glottal stop on first 'a')",
+    "culturalNotes": "More formal than 'bye'. Often used when leaving someone's home.",
+    "excludeable": true,
+    "image": {
+      "filename": "greetings-04-female-paalam.webp",
+      "prompt": "A child waving goodbye at a door, gentle and warm expression",
+      "style": "kid-friendly-illustration"
+    },
+    "audio": {
+      "filename": "greetings-04-female-paalam.mp3",
+      "ssml": "<speak>Paalam<break time=\"300ms\"/></speak>"
+    }
+  },
+  {
+    "wordId": "greetings-05-female-magandang-hapon",
+    "tagalog": "Magandang hapon",
+    "english": "Good afternoon",
+    "category": "greetings",
+    "tags": ["time-based-greetings"],
+    "recommendedGrade": 1,
+    "difficultyLevel": 2,
+    "frequency": "high",
+    "exampleSentenceTagalog": "Magandang hapon po.",
+    "exampleSentenceEnglish": "Good afternoon (polite).",
+    "pronunciationNotes": "ma-gan-DANG HA-pon",
+    "culturalNotes": "Used from ~11 AM until around 5-6 PM.",
+    "excludeable": true,
+    "image": {
+      "filename": "greetings-05-female-magandang-hapon.webp",
+      "prompt": "A child in the afternoon sunlight, relaxed and friendly",
+      "style": "kid-friendly-illustration"
+    },
+    "audio": {
+      "filename": "greetings-05-female-magandang-hapon.mp3",
+      "ssml": "<speak>Magandang hapon<break time=\"200ms\"/></speak>"
+    }
+  },
+  {
+    "wordId": "greetings-06-female-magandang-gabi",
+    "tagalog": "Magandang gabi",
+    "english": "Good evening",
+    "category": "greetings",
+    "tags": ["time-based-greetings"],
+    "recommendedGrade": 1,
+    "difficultyLevel": 2,
+    "frequency": "high",
+    "exampleSentenceTagalog": "Magandang gabi po.",
+    "exampleSentenceEnglish": "Good evening (polite).",
+    "pronunciationNotes": "ma-gan-DANG GA-bi",
+    "culturalNotes": "Used after sunset. Common when visiting in the evening.",
+    "excludeable": true,
+    "image": {
+      "filename": "greetings-06-female-magandang-gabi.webp",
+      "prompt": "A cozy evening scene with a child waving, soft lighting",
+      "style": "kid-friendly-illustration"
+    },
+    "audio": {
+      "filename": "greetings-06-female-magandang-gabi.mp3",
+      "ssml": "<speak>Magandang gabi<break time=\"200ms\"/></speak>"
+    }
+  },
+  {
+    "wordId": "greetings-07-female-magandang-araw",
+    "tagalog": "Magandang araw",
+    "english": "Good day",
+    "category": "greetings",
+    "tags": ["time-based-greetings"],
+    "recommendedGrade": 1,
+    "difficultyLevel": 2,
+    "frequency": "medium",
+    "exampleSentenceTagalog": "Magandang araw po.",
+    "exampleSentenceEnglish": "Good day (polite).",
+    "pronunciationNotes": "ma-gan-DANG A-raw",
+    "culturalNotes": "More formal/general greeting. Often used in schools or offices.",
+    "excludeable": true,
+    "image": {
+      "filename": "greetings-07-female-magandang-araw.webp",
+      "prompt": "A bright full-day scene with a happy child",
+      "style": "kid-friendly-illustration"
+    },
+    "audio": {
+      "filename": "greetings-07-female-magandang-araw.mp3",
+      "ssml": "<speak>Magandang araw<break time=\"200ms\"/></speak>"
+    }
+  },
+  {
+    "wordId": "greetings-08-female-tuloy-kayo",
+    "tagalog": "Tuloy kayo",
+    "english": "Please come in",
+    "category": "greetings",
+    "tags": ["hospitality", "respect-language"],
+    "recommendedGrade": 1,
+    "difficultyLevel": 3,
+    "frequency": "high",
+    "exampleSentenceTagalog": "Tuloy po kayo.",
+    "exampleSentenceEnglish": "Please come in (polite).",
+    "pronunciationNotes": "tu-LOY ka-YO",
+    "culturalNotes": "Very common when welcoming guests into the home. Shows hospitality.",
+    "excludeable": true,
+    "image": {
+      "filename": "greetings-08-female-tuloy-kayo.webp",
+      "prompt": "A welcoming scene at a house door with a smiling child inviting someone in",
+      "style": "kid-friendly-illustration"
+    },
+    "audio": {
+      "filename": "greetings-08-female-tuloy-kayo.mp3",
+      "ssml": "<speak>Tuloy kayo<break time=\"200ms\"/></speak>"
+    }
+  },
+  {
+    "wordId": "greetings-09-female-hanggang-sa-muli",
+    "tagalog": "Hanggang sa muli",
+    "english": "Until we meet again",
+    "category": "greetings",
+    "tags": ["goodbyes"],
+    "recommendedGrade": 2,
+    "difficultyLevel": 3,
+    "frequency": "medium",
+    "exampleSentenceTagalog": "Hanggang sa muli po.",
+    "exampleSentenceEnglish": "Until we meet again (polite).",
+    "pronunciationNotes": "hang-GANG sa mu-LI",
+    "culturalNotes": "A warm, slightly formal way to say goodbye. Often used with people you expect to see again.",
+    "excludeable": true,
+    "image": {
+      "filename": "greetings-09-female-hanggang-sa-muli.webp",
+      "prompt": "A child waving goodbye with a hopeful expression",
+      "style": "kid-friendly-illustration"
+    },
+    "audio": {
+      "filename": "greetings-09-female-hanggang-sa-muli.mp3",
+      "ssml": "<speak>Hanggang sa muli<break time=\"300ms\"/></speak>"
+    }
+  },
+  {
+    "wordId": "greetings-10-female-kumain-ka-na",
+    "tagalog": "Kumain ka na?",
+    "english": "Have you eaten?",
+    "category": "greetings",
+    "tags": ["care-expressions", "daily-life"],
+    "recommendedGrade": 2,
+    "difficultyLevel": 3,
+    "frequency": "high",
+    "exampleSentenceTagalog": "Kumain ka na ba?",
+    "exampleSentenceEnglish": "Have you eaten yet?",
+    "pronunciationNotes": "ku-MAIN ka NA",
+    "culturalNotes": "A very Filipino way of showing care. Equivalent to asking if someone is okay/hungry.",
+    "excludeable": true,
+    "image": {
+      "filename": "greetings-10-female-kumain-ka-na.webp",
+      "prompt": "A caring scene of a child offering food or asking about eating",
+      "style": "kid-friendly-illustration"
+    },
+    "audio": {
+      "filename": "greetings-10-female-kumain-ka-na.mp3",
+      "ssml": "<speak>Kumain ka na<break time=\"200ms\"/></speak>"
+    }
+  },
+  {
+    "wordId": "greetings-11-female-saan-pupunta",
+    "tagalog": "Saan pupunta?",
+    "english": "Where are you going?",
+    "category": "greetings",
+    "tags": ["casual-inquiry", "daily-life"],
+    "recommendedGrade": 2,
+    "difficultyLevel": 3,
+    "frequency": "high",
+    "exampleSentenceTagalog": "Saan ka pupunta?",
+    "exampleSentenceEnglish": "Where are you going?",
+    "pronunciationNotes": "sa-AN pu-PUN-ta",
+    "culturalNotes": "Common casual question when seeing someone leave. Shows interest and care.",
+    "excludeable": true,
+    "image": {
+      "filename": "greetings-11-female-saan-pupunta.webp",
+      "prompt": "A child at a doorway looking curious and friendly",
+      "style": "kid-friendly-illustration"
+    },
+    "audio": {
+      "filename": "greetings-11-female-saan-pupunta.mp3",
+      "ssml": "<speak>Saan pupunta<break time=\"200ms\"/></speak>"
+    }
+  }
+]
