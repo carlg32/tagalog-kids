@@ -84,6 +84,7 @@ function showQuizQuestion() {
   $('english-translation').textContent = `What does this mean?`;
   $('illustration').src = `${CONFIG.illustrationBasePath}${q.word.wordId}.webp`;
 
+  const ap = $("audio-player"); if (ap) ap.src = `${CONFIG.audioBasePath}${q.word.wordId}.mp3`;
   $('progress-text').textContent = `${num} / ${totalQ}`;
   $('progress-fill').style.width = `${(num / totalQ) * 100}%`;
 
