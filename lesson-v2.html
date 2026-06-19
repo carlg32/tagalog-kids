@@ -72,8 +72,9 @@
   <div id="quiz-section"></div>
   <div id="congrats-section"></div>
   <audio id="audio-player"></audio>
+  <div id="phase-badge"></div>
 
-  <!-- Improved QuizEngine stub -->
+  <!-- Improved QuizEngine with nextQuestion() -->
   <script>
     window.QuizEngine = class {
       constructor(questions) {
@@ -87,9 +88,12 @@
       getCurrentQuestion() {
         return this.questions[this.currentIndex] || null;
       }
-      next() {
+      nextQuestion() {
         this.currentIndex++;
         return this.getCurrentQuestion();
+      }
+      next() {
+        return this.nextQuestion();
       }
       checkAnswer(answer) {
         const q = this.getCurrentQuestion();
