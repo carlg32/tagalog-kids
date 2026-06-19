@@ -2,135 +2,54 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Tagalog Kids — Learn Tagalog!</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tagalog Kids</title>
+  <link rel="stylesheet" href="css/slide-v2.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --primary: #4A90E2;
-      --secondary: #F5A623;
-      --background: #FFF9E6;
-      --green: #7ED321;
-      --text: #4A4A4A;
-      --text-light: rgba(74, 74, 74, 0.6);
-      --white: #FFFFFF;
-    }
     body {
       font-family: 'Nunito', sans-serif;
-      background: var(--background);
-      color: var(--text);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1rem;
+      margin: 0;
     }
-    .container {
-      background: var(--white);
-      border-radius: 2rem;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 500px;
-      padding: 2.5rem 2rem;
+    .start-container {
       text-align: center;
-    }
-    .logo { font-size: 4rem; margin-bottom: 0.3rem; }
-    h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem; }
-    .subtitle { color: var(--text-light); margin-bottom: 2rem; }
-    .start-btn {
-      background: var(--primary);
       color: white;
+    }
+    .start-btn {
+      background: white;
+      color: #667eea;
       border: none;
-      border-radius: 50px;
-      padding: 1rem 3rem;
-      font-size: 1.2rem;
+      padding: 16px 48px;
+      font-size: 1.3rem;
       font-weight: 700;
+      border-radius: 9999px;
       cursor: pointer;
-      box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
-      transition: transform 0.2s;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      transition: transform 0.2s ease;
     }
-    .start-btn:hover { transform: translateY(-2px); }
-    .stats {
-      display: flex;
-      justify-content: center;
-      gap: 2rem;
-      margin: 2rem 0;
-    }
-    .stat-item { text-align: center; }
-    .stat-number { font-size: 1.8rem; font-weight: 800; color: var(--primary); }
-    .stat-label { font-size: 0.8rem; color: var(--text-light); }
-    .config { background: #f8f9fa; border-radius: 16px; padding: 1rem; margin: 1.5rem 0; }
-    .config-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; }
-    .config-row label { font-size: 0.85rem; font-weight: 600; }
-    .config-row select, .config-row input { padding: 0.3rem 0.5rem; border: 2px solid #ddd; border-radius: 8px; }
-    .parent-link {
-      margin-top: 2rem;
-      font-size: 0.85rem;
-    }
-    .parent-link a {
-      color: #6c757d;
-      text-decoration: none;
+    .start-btn:hover {
+      transform: translateY(-3px);
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="logo">🇵🇭</div>
-    <h1>Tagalog Kids</h1>
-    <p class="subtitle">Learn Tagalog with fun!</p>
-
+  <div class="start-container">
+    <h1>🇵🇭 Tagalog Kids</h1>
+    <p>Learn Tagalog the fun way!</p>
     <button class="start-btn" id="start-btn">Start Lesson</button>
-
-    <div class="stats">
-      <div class="stat-item">
-        <div class="stat-number" id="words-practiced">0</div>
-        <div class="stat-label">Practiced</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number" id="words-mastered">0</div>
-        <div class="stat-label">Mastered</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number" id="day-streak">0</div>
-        <div class="stat-label">Day Streak</div>
-      </div>
-    </div>
-
-    <div class="config">
-      <div class="config-row">
-        <label>Words per session</label>
-        <input type="number" id="words-per-session" value="5" min="3" max="10">
-      </div>
-    </div>
-
-    <p style="font-size: 0.75rem; color: var(--text-light);">
-      AI will choose the best words for you based on your progress.
-    </p>
-
-    <div class="parent-link">
-      <a href="parent-dashboard.html">Parent Dashboard (Customize Words)</a>
-    </div>
   </div>
 
   <script>
-    // Basic stats loading (placeholder)
-    function updateStats() {
-      const progress = JSON.parse(localStorage.getItem('tagalog-kids-progress') || '{}');
-      document.getElementById('words-practiced').textContent = progress.practiced || 0;
-      document.getElementById('words-mastered').textContent = progress.mastered || 0;
-      document.getElementById('day-streak').textContent = progress.streak || 0;
-    }
-
     function startSession() {
-      const wordsPerSession = document.getElementById('words-per-session').value;
-      window.location.href = `lesson-v2.html?words=${wordsPerSession}`;
+      // Go to lesson without ?words param so it loads all words
+      window.location.href = 'lesson-v2.html';
     }
-
+    
     document.getElementById('start-btn').addEventListener('click', startSession);
-    updateStats();
   </script>
 </body>
 </html>
