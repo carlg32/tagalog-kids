@@ -18,53 +18,39 @@
     }
     .container {
       text-align: center;
-      padding: 40px;
-      max-width: 400px;
+      padding: 40px 20px;
     }
     h1 {
-      font-size: 2.8rem;
+      font-size: 3rem;
       margin-bottom: 10px;
     }
-    .settings {
-      background: rgba(255,255,255,0.15);
-      padding: 20px;
-      border-radius: 16px;
-      margin: 30px 0;
-    }
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-    input {
-      width: 80px;
-      padding: 8px;
-      border: none;
-      border-radius: 8px;
-      text-align: center;
-      font-size: 1.1rem;
+    p {
+      font-size: 1.3rem;
+      margin-bottom: 50px;
+      opacity: 0.9;
     }
     .start-btn {
       background: white;
       color: #667eea;
       border: none;
-      padding: 16px 48px;
-      font-size: 1.3rem;
+      padding: 18px 52px;
+      font-size: 1.35rem;
       font-weight: 700;
       border-radius: 9999px;
       cursor: pointer;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      transition: transform 0.2s ease;
-      margin-top: 10px;
+      transition: all 0.3s ease;
     }
     .start-btn:hover {
-      transform: translateY(-3px);
+      transform: translateY(-4px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.3);
     }
     .dashboard-link {
       display: block;
-      margin-top: 30px;
+      margin-top: 40px;
       color: white;
       text-decoration: none;
+      font-size: 1.05rem;
       opacity: 0.85;
     }
     .dashboard-link:hover {
@@ -77,23 +63,16 @@
   <div class="container">
     <h1>🇵🇭 Tagalog Kids</h1>
     <p>Learn Tagalog the fun way!</p>
-
-    <div class="settings">
-      <label>Words per session</label>
-      <input type="number" id="words-input" value="5" min="1" max="20">
-    </div>
-
+    
     <button class="start-btn" id="start-btn">Start Lesson</button>
-
+    
     <a href="parent-dashboard.html" class="dashboard-link">Parent Dashboard</a>
   </div>
 
   <script>
-    const input = document.getElementById('words-input');
-    
     document.getElementById('start-btn').addEventListener('click', () => {
-      const count = parseInt(input.value) || 5;
-      window.location.href = `lesson-v2.html?words=${count}`;
+      // Go directly without ?words param (loads all words)
+      window.location.href = 'lesson-v2.html';
     });
   </script>
 </body>
