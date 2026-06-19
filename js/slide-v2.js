@@ -143,8 +143,11 @@ function showComplete() {
 function init() {
   loadWordList().then(() => {
     if (wordList.length === 0) {
+    showLearnWord(0);
       document.body.innerHTML = '<h1 style="text-align:center;margin-top:120px">No words</h1>';
+    showLearnWord(0);
       return;
+    showLearnWord(0);
     }
     $('next-btn').addEventListener('click', () => {
       if (phase === 'learn') nextLearn();
