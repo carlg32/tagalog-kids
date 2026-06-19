@@ -1,5 +1,5 @@
 /**
- * Clean Slide v2 — Tagalog Kids
+ * Clean Slide v2 — Tagalog Kids (Preserves buttons)
  */
 
 const CONFIG = {
@@ -44,6 +44,11 @@ function showLearnWord(index) {
 
   $('prev-btn').style.display = index > 0 ? 'block' : 'none';
   $('next-btn').textContent = 'Next →';
+  $('next-btn').style.display = 'block';
+
+  // Remove any quiz choices
+  const oldChoices = $('quiz-choices');
+  if (oldChoices) oldChoices.remove();
 }
 
 function nextLearn() {
@@ -85,6 +90,11 @@ function showQuizQuestion() {
   $('next-btn').style.display = 'block';
   $('next-btn').textContent = 'Next →';
 
+  // Remove old choices if exist
+  const old = $('quiz-choices');
+  if (old) old.remove();
+
+  // Add choices
   let html = '<div id="quiz-choices" style="margin-top:25px;display:flex;flex-direction:column;gap:10px">';
   q.options.forEach((opt, i) => {
     html += `<button onclick="answerQuiz(${i})" style="padding:13px 18px;font-size:1.1rem;border:none;border-radius:12px;background:white;cursor:pointer">${opt.english}</button>`;
@@ -92,11 +102,7 @@ function showQuizQuestion() {
   html += '</div>';
 
   const container = document.querySelector('.word-display');
-  container.innerHTML = `
-    <h1 style="font-size:2rem;margin-bottom:4px">${q.word.tagalog}</h1>
-    <p style="font-size:1rem;opacity:0.8">What does this mean?</p>
-    ${html}
-  `;
+  container.insertAdjacentHTML('beforeend', html);
 }
 
 window.answerQuiz = function(i) {
@@ -105,12 +111,13 @@ window.answerQuiz = function(i) {
   currentQuiz.answers.push(correct);
 
   const container = document.querySelector('.word-display');
-  container.innerHTML = `
-    <h1 style="font-size:2rem;margin-bottom:4px">${correct ? '✅ Correct!' : '❌ Not quite'}</h1>
-    <p>Correct: <strong>${q.correct.english}</strong></p>
+  const choices = $('quiz-choices');
+  if (choices) choices.innerHTML = `
+    <p style="font-size:1.1rem;margin-top:10px">${correct ? '✅ Correct!' : '❌ Not quite'} — Correct: <strong>${q.correct.english}</strong></p>
   `;
 
   setTimeout(() => {
+    if (choices) choices.remove();
     currentQuiz.index++;
     if (currentQuiz.index >= currentQuiz.questions.length) {
       if (currentQuiz.type === 'easy') startQuiz('hard');
