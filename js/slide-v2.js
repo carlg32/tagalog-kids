@@ -45,7 +45,7 @@ function showLearnWord(index) {
   $('progress-fill').style.width = `${((index + 1) / total) * 100}%`;
 
   $('prev-btn').style.display = index > 0 ? 'block' : 'none';
-  $('next-btn').textContent = index < total - 1 ? 'Next →' : 'Finish →';
+  $('next-btn').textContent = index < total - 1 ? 'Next →' : 'Next →';
 }
 
 function nextLearn() {
@@ -87,8 +87,8 @@ function showQuizQuestion() {
   $('progress-text').textContent = `${displayNum} / ${totalQuestions}`;
   $('progress-fill').style.width = `${(displayNum / totalQuestions) * 100}%`;
 
-  $('prev-btn').style.display = 'none';
-  $('next-btn').style.display = 'none';
+  
+  
 
   let html = '<div id="quiz-choices" style="margin-top:30px;display:flex;flex-direction:column;gap:12px">';
   q.options.forEach((opt, i) => {
@@ -138,8 +138,8 @@ function showComplete() {
   $('tagalog-word').textContent = '🎉 Great Job!';
   $('english-translation').textContent = `You scored ${correct} / ${total}`;
 
-  $('next-btn').style.display = 'none';
-  $('prev-btn').style.display = 'none';
+  
+  
 }
 
 function init() {
