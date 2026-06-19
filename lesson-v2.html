@@ -28,10 +28,7 @@
     .sound-centered .sound-icon-btn:active {
       transform: scale(0.92);
     }
-    #learn-section, #quiz-section, #congrats-section, 
-    #audio-player, #choices, #feedback, #question-stem,
-    #congrats-score, #congrats-message, #congrats-detail,
-    #example-sentence, #quiz-icon {
+    #learn-section, #quiz-section, #congrats-section, #audio-player {
       display: none;
     }
   </style>
@@ -70,28 +67,37 @@
     </footer>
   </div>
 
-  <!-- Hidden elements required by slide-v2.js -->
+  <!-- Hidden elements -->
   <div id="learn-section"></div>
   <div id="quiz-section"></div>
   <div id="congrats-section"></div>
   <audio id="audio-player"></audio>
-  <div id="choices"></div>
-  <div id="feedback"></div>
-  <div id="question-stem"></div>
-  <div id="congrats-score"></div>
-  <div id="congrats-message"></div>
-  <div id="congrats-detail"></div>
-  <div id="example-sentence"></div>
-  <div id="quiz-icon"></div>
-  <div id="phase-badge"></div>
 
-  <!-- Minimal QuizEngine stub -->
+  <!-- Improved QuizEngine stub -->
   <script>
     window.QuizEngine = class {
-      constructor() {}
-      start() { return []; }
-      next() { return null; }
-      checkAnswer() { return false; }
+      constructor(questions) {
+        this.questions = questions || [];
+        this.currentIndex = 0;
+      }
+      start() {
+        this.currentIndex = 0;
+        return this.questions;
+      }
+      getCurrentQuestion() {
+        return this.questions[this.currentIndex] || null;
+      }
+      next() {
+        this.currentIndex++;
+        return this.getCurrentQuestion();
+      }
+      checkAnswer(answer) {
+        const q = this.getCurrentQuestion();
+        return q && q.correct === answer;
+      }
+      isComplete() {
+        return this.currentIndex >= this.questions.length;
+      }
     };
   </script>
 
