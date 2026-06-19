@@ -71,9 +71,17 @@ async function loadWordList() {
   if (wordIdsParam) {
     const response = await fetch(CONFIG.wordListFile);
     const allWords = await response.json();
-    const wantedIds = wordIdsParam.split(',').map(s => s.trim());
-    wordList = wantedIds.map(id => allWords.find(w => w.wordId === id)).filter(Boolean);
+    
+    if (/^d+$/.test(wordIdsParam)) {
+      const count = parseInt(wordIdsParam);
+      const shuffled = [...allWords].sort(() => 0.5 - Math.random());
+      wordList = shuffled.slice(0, count);
+    } else {
+      const wantedIds = wordIdsParam.split(",").map(s => s.trim());
+      wordList = wantedIds.map(id => allWords.find(w => w.wordId === id)).filter(Boolean);
+    }
     sessionWords = wordList.map(w => w.wordId);
+  } else {
   } else {
     const response = await fetch(CONFIG.wordListFile);
     wordList = await response.json();
