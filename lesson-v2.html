@@ -73,8 +73,11 @@
   <div id="congrats-section"></div>
   <audio id="audio-player"></audio>
   <div id="phase-badge"></div>
+  <div id="congrats-score"></div>
+  <div id="congrats-message"></div>
+  <div id="congrats-detail"></div>
 
-  <!-- Full QuizEngine stub with answer tracking -->
+  <!-- QuizEngine with full answer tracking -->
   <script>
     window.QuizEngine = class {
       constructor(questions) {
@@ -110,9 +113,6 @@
         return this.answers;
       }
     };
-
-    // Also expose allAnswers globally for showCongrats
-    window.allAnswers = [];
   </script>
 
   <script src="js/slide-v2.js"></script>
