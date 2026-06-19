@@ -134,7 +134,7 @@ function showComplete() {
   const total = currentQuiz.answers.length;
   const correct = currentQuiz.answers.filter(Boolean).length;
   $('tagalog-word').textContent = '🎉 Great Job!';
-  $('english-translation').textContent = `You scored ${correct} / ${total}`;
+  $("english-translation").textContent = correct === total ? "Perfect! 🎉" : correct === 0 ? "Don't worry, you can try again! 💪" : `You scored ${correct} / ${total}`;
   $('next-btn').style.display = 'none';
   $('prev-btn').style.display = 'none';
 }
