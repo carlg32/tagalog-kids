@@ -158,3 +158,122 @@ async function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+// ===== QUIZ SYSTEM =====
+let currentQuiz = null;
+let quizPhase = 'easy'; // 'easy' or 'hard'
+
+function startQuiz(difficulty) {
+  phase = `quiz-${difficulty}`;
+  quizPhase = difficulty;
+  
+  // Create simple quiz with current words
+  const questions = wordList.map(word => {
+    const wrongAnswers = wordList
+      .filter(w => w.wordId !== word.wordId)
+      .sort(() => 0.5 - Math.random())
+      .slice(0, difficulty === 'easy' ? 1 : 3);
+    
+    const options = [word, ...wrongAnswers].sort(() => 0.5 - Math.random());
+    
+    return {
+      word: word,
+      options: options,
+      correct: word
+    };
+  });
+  
+  currentQuiz = {
+    questions: questions,
+    currentIndex: 0,
+    answers: []
+  };
+  
+  showQuizQuestion();
+}
+
+function showQuizQuestion() {
+  if (!currentQuiz || currentQuiz.currentIndex >= currentQuiz.questions.length) {
+    // Quiz finished
+    if (quizPhase === 'easy') {
+      startQuiz('hard');
+    } else {
+      showCongrats();
+    }
+    return;
+  }
+  
+  const q = currentQuiz.questions[currentQuiz.currentIndex];
+  
+  // Simple quiz display
+  el.tagalogWord.textContent = q.word.tagalog;
+  el.englishTranslation.textContent = `"${q.word.english}"`;
+  
+  // Show choices
+  let choicesHTML = '<div style="display:flex;flex-direction:column;gap:10px;margin-top:20px">';
+  q.options.forEach((opt, i) => {
+    choicesHTML += `
+      <button onclick="selectAnswer(${i})" style="
+        padding:12px 20px; 
+        font-size:1.1rem; 
+        border:none; 
+        border-radius:12px; 
+        background:white; 
+        color:#333;
+        cursor:pointer;
+      ">${opt.tagalog}</button>
+    `;
+  });
+  choicesHTML += '</div>';
+  
+  // Replace word display with choices temporarily
+  const wordDisplay = document.querySelector('.word-display');
+  if (wordDisplay) {
+    wordDisplay.innerHTML = `
+      <h1 style="font-size:2rem;margin-bottom:10px">${q.word.tagalog}</h1>
+      <p style="font-size:1.1rem;opacity:0.8">"${q.word.english}"</p>
+      ${choicesHTML}
+    `;
+  }
+}
+
+window.selectAnswer = function(optionIndex) {
+  const q = currentQuiz.questions[currentQuiz.currentIndex];
+  const selected = q.options[optionIndex];
+  const isCorrect = selected.wordId === q.correct.wordId;
+  
+  currentQuiz.answers.push({ correct: isCorrect });
+  
+  // Show feedback briefly
+  const wordDisplay = document.querySelector('.word-display');
+  if (wordDisplay) {
+    wordDisplay.innerHTML = `
+      <h1 style="font-size:2rem;margin-bottom:10px">${isCorrect ? '✅ Correct!' : '❌ Try again'}</h1>
+      <p style="font-size:1.1rem">Correct answer: ${q.correct.tagalog}</p>
+    `;
+  }
+  
+  setTimeout(() => {
+    currentQuiz.currentIndex++;
+    // Restore word display
+    if (wordDisplay) {
+      wordDisplay.innerHTML = `
+        <h1 class="tagalog-word" id="tagalog-word">${q.word.tagalog}</h1>
+        <p class="english-translation" id="english-translation">"${q.word.english}"</p>
+      `;
+    }
+    showQuizQuestion();
+  }, 1200);
+}
+
+function showCongrats() {
+  phase = 'complete';
+  const correctCount = currentQuiz ? currentQuiz.answers.filter(a => a.correct).length : 0;
+  const total = currentQuiz ? currentQuiz.questions.length : wordList.length;
+  
+  el.tagalogWord.textContent = '🎉 Great Job!';
+  el.englishTranslation.textContent = `You got ${correctCount} out of ${total} correct!`;
+  
+  if (el.nextBtn) el.nextBtn.style.display = 'none';
+  if (el.prevBtn) el.prevBtn.style.display = 'none';
+}
