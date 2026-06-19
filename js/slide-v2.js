@@ -37,6 +37,7 @@ function showLearnWord(index) {
   $('tagalog-word').textContent = word.tagalog;
   $('english-translation').textContent = `"${word.english}"`;
   $('illustration').src = `${CONFIG.illustrationBasePath}${word.wordId}.webp`;
+  const ap = $("audio-player"); if (ap) ap.src = `${CONFIG.audioBasePath}${word.wordId}.mp3`;
 
   const total = wordList.length;
   $('progress-text').textContent = `${index + 1} / ${total}`;
