@@ -141,7 +141,7 @@ function showComplete() {
 }
 
 function init() {
-  loadWordList().then(() => {
+  loadWords().then(() => {
     if (wordList.length === 0) {
       document.body.innerHTML = '<h1 style="text-align:center;margin-top:120px">No words</h1>';
       return;
