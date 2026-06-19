@@ -45,7 +45,7 @@ function showLearnWord(index) {
   $('progress-fill').style.width = `${((index + 1) / total) * 100}%`;
 
   $('prev-btn').style.display = index > 0 ? 'block' : 'none';
-  $('next-btn').textContent = index < total - 1 ? 'Next →' : 'Finish →';
+  $('next-btn').style.display = 'block';
 }
 
 function nextLearn() {
