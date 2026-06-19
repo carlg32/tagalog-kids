@@ -1,6 +1,5 @@
 /**
  * Clean Slide v2 — Tagalog Kids
- * Learn → Easy Quiz (2 English choices) → Hard Quiz (4 English choices)
  */
 
 const CONFIG = {
@@ -20,7 +19,6 @@ const $ = id => document.getElementById(id);
 async function loadWords() {
   const params = new URLSearchParams(window.location.search);
   const param = params.get('words');
-
   const res = await fetch(CONFIG.wordListFile);
   const all = await res.json();
 
@@ -45,7 +43,7 @@ function showLearnWord(index) {
   $('progress-fill').style.width = `${((index + 1) / total) * 100}%`;
 
   $('prev-btn').style.display = index > 0 ? 'block' : 'none';
-  $('next-btn').textContent = index < total - 1 ? 'Next →' : 'Next →';
+  $('next-btn').textContent = 'Next →';
 }
 
 function nextLearn() {
@@ -61,85 +59,91 @@ function startQuiz(type) {
   const numWrong = type === 'easy' ? 1 : 3;
 
   const questions = wordList.map(w => {
-    const wrongs = wordList
-      .filter(x => x.wordId !== w.wordId)
-      .sort(() => 0.5 - Math.random())
-      .slice(0, numWrong);
-    
+    const wrongs = wordList.filter(x => x.wordId !== w.wordId)
+      .sort(() => 0.5 - Math.random()).slice(0, numWrong);
     const opts = [w, ...wrongs].sort(() => 0.5 - Math.random());
     return { word: w, options: opts, correct: w };
   });
 
   currentQuiz = { questions, index: 0, answers: [], type };
-
   showQuizQuestion();
 }
 
 function showQuizQuestion() {
   const q = currentQuiz.questions[currentQuiz.index];
-  const totalQuestions = wordList.length * 2;
-  const displayNum = wordList.length + currentQuiz.index + 1;
+  const totalQ = wordList.length * 2;
+  const num = wordList.length + currentQuiz.index + 1;
 
   $('tagalog-word').textContent = q.word.tagalog;
   $('english-translation').textContent = `What does this mean?`;
   $('illustration').src = `${CONFIG.illustrationBasePath}${q.word.wordId}.webp`;
 
-  $('progress-text').textContent = `${displayNum} / ${totalQuestions}`;
-  $('progress-fill').style.width = `${(displayNum / totalQuestions) * 100}%`;
+  $('progress-text').textContent = `${num} / ${totalQ}`;
+  $('progress-fill').style.width = `${(num / totalQ) * 100}%`;
 
-  
-  
+  $('prev-btn').style.display = 'block';
+  $('next-btn').style.display = 'block';
+  $('next-btn').textContent = 'Next →';
 
-  let html = '<div id="quiz-choices" style="margin-top:30px;display:flex;flex-direction:column;gap:12px">';
+  let html = '<div id="quiz-choices" style="margin-top:25px;display:flex;flex-direction:column;gap:10px">';
   q.options.forEach((opt, i) => {
-    html += `<button onclick="answerQuiz(${i})" style="padding:14px 20px;font-size:1.15rem;border:none;border-radius:14px;background:white;cursor:pointer">${opt.english}</button>`;
+    html += `<button onclick="answerQuiz(${i})" style="padding:13px 18px;font-size:1.1rem;border:none;border-radius:12px;background:white;cursor:pointer">${opt.english}</button>`;
   });
   html += '</div>';
 
   const container = document.querySelector('.word-display');
   container.innerHTML = `
-    <h1 style="font-size:2.1rem;margin-bottom:6px">${q.word.tagalog}</h1>
-    <p style="font-size:1.1rem;opacity:0.8">What does this mean?</p>
+    <h1 style="font-size:2rem;margin-bottom:4px">${q.word.tagalog}</h1>
+    <p style="font-size:1rem;opacity:0.8">What does this mean?</p>
     ${html}
   `;
 }
 
 window.answerQuiz = function(i) {
   const q = currentQuiz.questions[currentQuiz.index];
-  const selected = q.options[i];
-  const correct = selected.wordId === q.correct.wordId;
+  const correct = q.options[i].wordId === q.correct.wordId;
   currentQuiz.answers.push(correct);
 
   const container = document.querySelector('.word-display');
   container.innerHTML = `
-    <h1 style="font-size:2.1rem;margin-bottom:6px">${correct ? '✅ Correct!' : '❌ Not quite'}</h1>
-    <p>Correct answer: <strong>${q.correct.english}</strong></p>
+    <h1 style="font-size:2rem;margin-bottom:4px">${correct ? '✅ Correct!' : '❌ Not quite'}</h1>
+    <p>Correct: <strong>${q.correct.english}</strong></p>
   `;
 
   setTimeout(() => {
     currentQuiz.index++;
     if (currentQuiz.index >= currentQuiz.questions.length) {
-      if (currentQuiz.type === 'easy') {
-        startQuiz('hard');
-      } else {
-        showComplete();
-      }
+      if (currentQuiz.type === 'easy') startQuiz('hard');
+      else showComplete();
     } else {
       showQuizQuestion();
     }
-  }, 1300);
+  }, 1100);
 }
 
 function showComplete() {
   phase = 'complete';
   const total = currentQuiz.answers.length;
   const correct = currentQuiz.answers.filter(Boolean).length;
-
   $('tagalog-word').textContent = '🎉 Great Job!';
   $('english-translation').textContent = `You scored ${correct} / ${total}`;
+  $('next-btn').style.display = 'none';
+  $('prev-btn').style.display = 'none';
+}
 
-  
-  
+function playAudio() {
+  const audio = $('audio-player');
+  if (audio && audio.src) audio.play().catch(() => {});
+}
+
+function setupListeners() {
+  $('next-btn').addEventListener('click', () => {
+    if (phase === 'learn') nextLearn();
+  });
+  $('prev-btn').addEventListener('click', () => {
+    if (phase === 'learn' && currentIndex > 0) showLearnWord(currentIndex - 1);
+  });
+  $('sound-icon-btn').addEventListener('click', playAudio);
 }
 
 function init() {
@@ -149,17 +153,7 @@ function init() {
       return;
     }
     showLearnWord(0);
-
-    $('next-btn').addEventListener('click', () => {
-      if (phase === 'learn') nextLearn();
-    });
-    $('prev-btn').addEventListener('click', () => {
-      if (phase === 'learn' && currentIndex > 0) showLearnWord(currentIndex - 1);
-    });
-    $('sound-icon-btn').addEventListener('click', () => {
-      const audio = $('audio-player');
-      if (audio && audio.src) audio.play().catch(() => {});
-    });
+    setupListeners();
   });
 }
 
