@@ -1,5 +1,6 @@
 /**
- * Slide Template JavaScript v2 — Tagalog Kids
+ * Clean Slide v2 — Tagalog Kids
+ * Learn → Easy Quiz (2 choices) → Hard Quiz (4 choices)
  */
 
 const CONFIG = {
@@ -10,270 +11,154 @@ const CONFIG = {
 };
 
 let wordList = [];
-let progress = {};
-let phase = 'learn';
-let currentWordIndex = 0;
-let quiz = null;
-let answered = false;
-let sessionWords = [];
+let currentIndex = 0;
+let phase = 'learn'; // 'learn' | 'quiz-easy' | 'quiz-hard' | 'complete'
+let currentQuiz = null;
 
 const $ = id => document.getElementById(id);
-const el = {
-  container: $('slide-container'),
-  tagalogWord: $('tagalog-word'),
-  englishTranslation: $('english-translation'),
-  illustration: $('illustration'),
-  characterScene: $('character-scene'),
-  soundIconBtn: $('sound-icon-btn'),
-  audioPlayer: $('audio-player'),
-  nextBtn: $('next-btn'),
-  prevBtn: $('prev-btn'),
-  progressFill: $('progress-fill'),
-  progressText: $('progress-text'),
-  phaseBadge: $('phase-badge'),
-  learnSection: $('learn-section'),
-  quizSection: $('quiz-section'),
-  congratsSection: $('congrats-section'),
-  questionStem: $('question-stem'),
-  choices: $('choices'),
-  feedback: $('feedback'),
-  congratsScore: $('congrats-score'),
-  congratsMessage: $('congrats-message'),
-  congratsDetail: $('congrats-detail'),
-  exampleSentence: $('example-sentence')
-};
 
-async function loadWordList() {
+async function loadWords() {
   const params = new URLSearchParams(window.location.search);
-  const wordIdsParam = params.get('words');
+  const param = params.get('words');
 
-  if (wordIdsParam) {
-    const response = await fetch(CONFIG.wordListFile);
-    const allWords = await response.json();
+  const res = await fetch(CONFIG.wordListFile);
+  const all = await res.json();
 
-    if (/^\d+$/.test(wordIdsParam)) {
-      const count = parseInt(wordIdsParam);
-      const shuffled = [...allWords].sort(() => 0.5 - Math.random());
-      wordList = shuffled.slice(0, count);
-    } else {
-      const wantedIds = wordIdsParam.split(',').map(s => s.trim());
-      wordList = wantedIds.map(id => allWords.find(w => w.wordId === id)).filter(Boolean);
-    }
-    sessionWords = wordList.map(w => w.wordId);
+  if (param && /^\d+$/.test(param)) {
+    const n = parseInt(param);
+    wordList = [...all].sort(() => 0.5 - Math.random()).slice(0, n);
   } else {
-    const response = await fetch(CONFIG.wordListFile);
-    wordList = await response.json();
-    sessionWords = wordList.map(w => w.wordId);
+    wordList = all;
   }
 }
 
-function loadProgress() {
-  const saved = localStorage.getItem(CONFIG.progressKey);
-  progress = saved ? JSON.parse(saved) : { words: {}, streak: 0, lastActiveDate: null };
-  if (!progress.words) progress.words = {};
-}
-
-function saveProgress() {
-  localStorage.setItem(CONFIG.progressKey, JSON.stringify(progress));
-}
-
-function startLearning() {
-  phase = 'learn';
-  currentWordIndex = 0;
-  showWord(currentWordIndex);
-}
-
-function showWord(index) {
-  if (index < 0 || index >= wordList.length) return;
+function showLearnWord(index) {
   const word = wordList[index];
-  currentWordIndex = index;
+  currentIndex = index;
 
-  el.tagalogWord.textContent = word.tagalog;
-  el.englishTranslation.textContent = `"${word.english}"`;
-  el.illustration.src = `${CONFIG.illustrationBasePath}${word.wordId}.webp`;
-
-  if (el.audioPlayer) {
-    el.audioPlayer.src = `${CONFIG.audioBasePath}${word.wordId}.mp3`;
-  }
-
-  const wp = progress.words?.[word.wordId];
-  if (el.phaseBadge) {
-    el.phaseBadge.textContent = wp?.mastered ? '⭐ Mastered' : (wp?.timesPracticed ? `🔊 ${wp.timesPracticed}/3` : 'Learn');
-  }
+  $('tagalog-word').textContent = word.tagalog;
+  $('english-translation').textContent = `"${word.english}"`;
+  $('illustration').src = `${CONFIG.illustrationBasePath}${word.wordId}.webp`;
 
   const total = wordList.length;
-  if (el.progressText) el.progressText.textContent = `${index + 1} / ${total}`;
-  if (el.progressFill) el.progressFill.style.width = `${((index + 1) / total) * 100}%`;
+  $('progress-text').textContent = `${index + 1} / ${total}`;
+  $('progress-fill').style.width = `${((index + 1) / total) * 100}%`;
 
-  if (el.prevBtn) el.prevBtn.style.display = index > 0 ? 'block' : 'none';
-  if (el.nextBtn) el.nextBtn.textContent = index < total - 1 ? 'Next →' : 'Finish →';
+  $('prev-btn').style.display = index > 0 ? 'block' : 'none';
+  $('next-btn').textContent = index < total - 1 ? 'Next →' : 'Finish →';
 }
 
-function playAudio() {
-  if (el.audioPlayer && el.audioPlayer.src) {
-    el.audioPlayer.play().catch(() => {});
-  }
-}
-
-function onNextClick() {
-  if (phase === 'learn') {
-    if (currentWordIndex < wordList.length - 1) {
-      showWord(currentWordIndex + 1);
-    } else {
-      // Transition to quiz
-      if (typeof startQuiz === 'function') {
-        startQuiz('easy');
-      }
-    }
+function nextLearn() {
+  if (currentIndex < wordList.length - 1) {
+    showLearnWord(currentIndex + 1);
+  } else {
+    startQuiz('easy');
   }
 }
 
-function setupEventListeners() {
-  if (el.soundIconBtn) {
-    el.soundIconBtn.addEventListener('click', playAudio);
-  }
-  if (el.nextBtn) {
-    el.nextBtn.addEventListener('click', onNextClick);
-  }
-  if (el.prevBtn) {
-    el.prevBtn.addEventListener('click', () => {
-      if (phase === 'learn' && currentWordIndex > 0) {
-        showWord(currentWordIndex - 1);
-      }
-    });
-  }
-}
+function startQuiz(type) {
+  phase = `quiz-${type}`;
+  const numWrong = type === 'easy' ? 1 : 3;
 
-async function init() {
-  loadProgress();
-  await loadWordList();
-
-  if (wordList.length === 0) {
-    document.body.innerHTML = '<h1 style="text-align:center;margin-top:100px">No words found</h1>';
-    return;
-  }
-
-  setupEventListeners();
-  startLearning();
-}
-
-document.addEventListener('DOMContentLoaded', init);
-
-// ===== QUIZ SYSTEM =====
-let currentQuiz = null;
-let quizPhase = 'easy'; // 'easy' or 'hard'
-
-function startQuiz(difficulty) {
-  phase = `quiz-${difficulty}`;
-  quizPhase = difficulty;
-  
-  // Create simple quiz with current words
-  const questions = wordList.map(word => {
-    const wrongAnswers = wordList
-      .filter(w => w.wordId !== word.wordId)
+  const questions = wordList.map(w => {
+    const wrongs = wordList.filter(x => x.wordId !== w.wordId)
       .sort(() => 0.5 - Math.random())
-      .slice(0, difficulty === 'easy' ? 1 : 3);
-    
-    const options = [word, ...wrongAnswers].sort(() => 0.5 - Math.random());
-    
-    return {
-      word: word,
-      options: options,
-      correct: word
-    };
+      .slice(0, numWrong);
+    const opts = [w, ...wrongs].sort(() => 0.5 - Math.random());
+    return { word: w, options: opts, correct: w };
   });
-  
-  currentQuiz = {
-    questions: questions,
-    currentIndex: 0,
-    answers: []
-  };
-  
+
+  currentQuiz = { questions, index: 0, answers: [], type };
+
   showQuizQuestion();
 }
 
 function showQuizQuestion() {
-  if (!currentQuiz || currentQuiz.currentIndex >= currentQuiz.questions.length) {
-    // Quiz finished
-    if (quizPhase === 'easy') {
-      startQuiz('hard');
-    } else {
-      showCongrats();
-    }
-    return;
-  }
-  
-  const q = currentQuiz.questions[currentQuiz.currentIndex];
-  
-  // Simple quiz display
-  el.tagalogWord.textContent = q.word.tagalog;
-  el.englishTranslation.textContent = `"${q.word.english}"`;
-  
-  // Show choices
-  let choicesHTML = '<div style="display:flex;flex-direction:column;gap:10px;margin-top:20px">';
+  const q = currentQuiz.questions[currentQuiz.index];
+  const totalQuestions = wordList.length * 2;
+  const displayNum = wordList.length + currentQuiz.index + 1;
+
+  $('tagalog-word').textContent = q.word.tagalog;
+  $('english-translation').textContent = `"${q.word.english}"`;
+  $('illustration').src = `${CONFIG.illustrationBasePath}${q.word.wordId}.webp`;
+
+  $('progress-text').textContent = `${displayNum} / ${totalQuestions}`;
+  $('progress-fill').style.width = `${(displayNum / totalQuestions) * 100}%`;
+
+  $('prev-btn').style.display = 'none';
+  $('next-btn').style.display = 'none';
+
+  // Choices
+  let html = '<div id="quiz-choices" style="margin-top:30px;display:flex;flex-direction:column;gap:12px">';
   q.options.forEach((opt, i) => {
-    choicesHTML += `
-      <button onclick="selectAnswer(${i})" style="
-        padding:12px 20px; 
-        font-size:1.1rem; 
-        border:none; 
-        border-radius:12px; 
-        background:white; 
-        color:#333;
-        cursor:pointer;
-      ">${opt.tagalog}</button>
-    `;
+    html += `<button onclick="answerQuiz(${i})" style="padding:14px 20px;font-size:1.15rem;border:none;border-radius:14px;background:white;cursor:pointer">${opt.tagalog}</button>`;
   });
-  choicesHTML += '</div>';
-  
-  // Replace word display with choices temporarily
-  const wordDisplay = document.querySelector('.word-display');
-  if (wordDisplay) {
-    wordDisplay.innerHTML = `
-      <h1 style="font-size:2rem;margin-bottom:10px">${q.word.tagalog}</h1>
-      <p style="font-size:1.1rem;opacity:0.8">"${q.word.english}"</p>
-      ${choicesHTML}
-    `;
-  }
+  html += '</div>';
+
+  const container = document.querySelector('.word-display');
+  container.innerHTML = `
+    <h1 style="font-size:2.1rem;margin-bottom:6px">${q.word.tagalog}</h1>
+    <p style="font-size:1.05rem;opacity:0.8">"${q.word.english}"</p>
+    ${html}
+  `;
 }
 
-window.selectAnswer = function(optionIndex) {
-  const q = currentQuiz.questions[currentQuiz.currentIndex];
-  const selected = q.options[optionIndex];
-  const isCorrect = selected.wordId === q.correct.wordId;
-  
-  currentQuiz.answers.push({ correct: isCorrect });
-  
-  // Show feedback briefly
-  const wordDisplay = document.querySelector('.word-display');
-  if (wordDisplay) {
-    wordDisplay.innerHTML = `
-      <h1 style="font-size:2rem;margin-bottom:10px">${isCorrect ? '✅ Correct!' : '❌ Try again'}</h1>
-      <p style="font-size:1.1rem">Correct answer: ${q.correct.tagalog}</p>
-    `;
-  }
-  
+window.answerQuiz = function(i) {
+  const q = currentQuiz.questions[currentQuiz.index];
+  const correct = i === q.options.findIndex(o => o.wordId === q.correct.wordId);
+  currentQuiz.answers.push(correct);
+
+  const container = document.querySelector('.word-display');
+  container.innerHTML = `
+    <h1 style="font-size:2.1rem;margin-bottom:6px">${correct ? '✅ Correct!' : '❌ Not quite'}</h1>
+    <p>Correct answer: <strong>${q.correct.tagalog}</strong></p>
+  `;
+
   setTimeout(() => {
-    currentQuiz.currentIndex++;
-    // Restore word display
-    if (wordDisplay) {
-      wordDisplay.innerHTML = `
-        <h1 class="tagalog-word" id="tagalog-word">${q.word.tagalog}</h1>
-        <p class="english-translation" id="english-translation">"${q.word.english}"</p>
-      `;
+    currentQuiz.index++;
+    if (currentQuiz.index >= currentQuiz.questions.length) {
+      if (currentQuiz.type === 'easy') {
+        startQuiz('hard');
+      } else {
+        showComplete();
+      }
+    } else {
+      showQuizQuestion();
     }
-    showQuizQuestion();
   }, 1200);
 }
 
-function showCongrats() {
+function showComplete() {
   phase = 'complete';
-  const correctCount = currentQuiz ? currentQuiz.answers.filter(a => a.correct).length : 0;
-  const total = currentQuiz ? currentQuiz.questions.length : wordList.length;
-  
-  el.tagalogWord.textContent = '🎉 Great Job!';
-  el.englishTranslation.textContent = `You got ${correctCount} out of ${total} correct!`;
-  
-  if (el.nextBtn) el.nextBtn.style.display = 'none';
-  if (el.prevBtn) el.prevBtn.style.display = 'none';
+  const correct = currentQuiz.answers.filter(Boolean).length;
+  const total = currentQuiz.answers.length;
+
+  $('tagalog-word').textContent = '🎉 Well Done!';
+  $('english-translation').textContent = `You scored ${correct} / ${total}`;
+
+  $('next-btn').style.display = 'none';
+  $('prev-btn').style.display = 'none';
 }
+
+function init() {
+  loadWordList().then(() => {
+    if (wordList.length === 0) {
+      document.body.innerHTML = '<h1 style="text-align:center;margin-top:120px">No words</h1>';
+      return;
+    }
+    $('next-btn').addEventListener('click', () => {
+      if (phase === 'learn') nextLearn();
+    });
+    $('prev-btn').addEventListener('click', () => {
+      if (phase === 'learn' && currentIndex > 0) showLearnWord(currentIndex - 1);
+    });
+    $('sound-icon-btn').addEventListener('click', () => {
+      const audio = $('audio-player');
+      if (audio && audio.src) audio.play().catch(() => {});
+    });
+
+    showLearnWord(0);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', init);
