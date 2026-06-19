@@ -26,28 +26,47 @@
     }
     p {
       font-size: 1.3rem;
-      margin-bottom: 50px;
+      margin-bottom: 40px;
       opacity: 0.9;
+    }
+    .settings {
+      background: rgba(255,255,255,0.15);
+      padding: 20px;
+      border-radius: 16px;
+      margin: 30px auto;
+      max-width: 280px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    input {
+      width: 80px;
+      padding: 8px;
+      border: none;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 1.1rem;
     }
     .start-btn {
       background: white;
       color: #667eea;
       border: none;
-      padding: 18px 52px;
-      font-size: 1.35rem;
+      padding: 16px 48px;
+      font-size: 1.3rem;
       font-weight: 700;
       border-radius: 9999px;
       cursor: pointer;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      transition: all 0.3s ease;
+      transition: transform 0.2s ease;
     }
     .start-btn:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+      transform: translateY(-3px);
     }
     .dashboard-link {
       display: block;
-      margin-top: 40px;
+      margin-top: 35px;
       color: white;
       text-decoration: none;
       font-size: 1.05rem;
@@ -63,16 +82,23 @@
   <div class="container">
     <h1>🇵🇭 Tagalog Kids</h1>
     <p>Learn Tagalog the fun way!</p>
-    
+
+    <div class="settings">
+      <label>Words per session</label>
+      <input type="number" id="words-input" value="5" min="1" max="20">
+    </div>
+
     <button class="start-btn" id="start-btn">Start Lesson</button>
-    
+
     <a href="parent-dashboard.html" class="dashboard-link">Parent Dashboard</a>
   </div>
 
   <script>
+    const input = document.getElementById('words-input');
+    
     document.getElementById('start-btn').addEventListener('click', () => {
-      // Go directly without ?words param (loads all words)
-      window.location.href = 'lesson-v2.html';
+      const count = parseInt(input.value) || 5;
+      window.location.href = `lesson-v2.html?words=${count}`;
     });
   </script>
 </body>
