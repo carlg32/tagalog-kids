@@ -118,16 +118,7 @@ window.answerQuiz = function(i) {
     <p style="font-size:1.1rem;margin-top:10px">${correct ? '✅ Correct!' : '❌ Not quite'} — Correct: <strong>${q.correct.english}</strong></p>
   `;
 
-  setTimeout(() => {
-    if (choices) choices.remove();
-    currentQuiz.index++;
-    if (currentQuiz.index >= currentQuiz.questions.length) {
-      if (currentQuiz.type === 'easy') startQuiz('hard');
-      else showComplete();
-    } else {
-      showQuizQuestion();
-    }
-  }, 1100);
+  // Answer recorded. User must click Next to proceed.
 }
 
 function showComplete() {
