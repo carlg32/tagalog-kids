@@ -470,7 +470,7 @@ let voiceInput = null;
 
 function initVoiceInput() {
   // Dynamically import the module (works with static site)
-  import('./js/voice-input.js').then(module => {
+  import('./voice-input.js').then(module => {
     const { initVoiceInput: createVoice, createMicButton } = module;
 
     voiceInput = createVoice({
