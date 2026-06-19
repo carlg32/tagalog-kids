@@ -28,9 +28,7 @@
     .sound-centered .sound-icon-btn:active {
       transform: scale(0.92);
     }
-    #learn-section, #quiz-section, #congrats-section, #audio-player {
-      display: none;
-    }
+    #learn-section, #quiz-section, #congrats-section, #audio-player,
     #phase-badge, #example-sentence {
       display: none;
     }
@@ -81,7 +79,7 @@
   <div id="congrats-message"></div>
   <div id="congrats-detail"></div>
 
-  <!-- QuizEngine with getProgress() -->
+  <!-- QuizEngine -->
   <script>
     window.QuizEngine = class {
       constructor(questions) {

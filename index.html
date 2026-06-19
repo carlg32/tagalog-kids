@@ -4,52 +4,60 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tagalog Kids</title>
-  <link rel="stylesheet" href="css/slide-v2.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
   <style>
     body {
+      margin: 0;
       font-family: 'Nunito', sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0;
-    }
-    .start-container {
-      text-align: center;
       color: white;
+    }
+    .container {
+      text-align: center;
+      padding: 40px;
+    }
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 40px;
+      opacity: 0.9;
     }
     .start-btn {
       background: white;
       color: #667eea;
       border: none;
-      padding: 16px 48px;
-      font-size: 1.3rem;
+      padding: 18px 50px;
+      font-size: 1.4rem;
       font-weight: 700;
       border-radius: 9999px;
       cursor: pointer;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      transition: transform 0.2s ease;
+      transition: all 0.3s ease;
     }
     .start-btn:hover {
-      transform: translateY(-3px);
+      transform: translateY(-4px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.3);
     }
   </style>
 </head>
 <body>
-  <div class="start-container">
+  <div class="container">
     <h1>🇵🇭 Tagalog Kids</h1>
     <p>Learn Tagalog the fun way!</p>
     <button class="start-btn" id="start-btn">Start Lesson</button>
   </div>
 
   <script>
-    function startSession() {
-      // Go to lesson without ?words param so it loads all words
+    document.getElementById('start-btn').addEventListener('click', () => {
       window.location.href = 'lesson-v2.html';
-    }
-    
-    document.getElementById('start-btn').addEventListener('click', startSession);
+    });
   </script>
 </body>
 </html>
