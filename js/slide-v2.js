@@ -143,24 +143,21 @@ function showComplete() {
 function init() {
   loadWordList().then(() => {
     if (wordList.length === 0) {
-    showLearnWord(0);
       document.body.innerHTML = '<h1 style="text-align:center;margin-top:120px">No words</h1>';
-    showLearnWord(0);
       return;
-    showLearnWord(0);
     }
+    showLearnWord(0);
+    
     $('next-btn').addEventListener('click', () => {
       if (phase === 'learn') nextLearn();
     });
     $('prev-btn').addEventListener('click', () => {
-      if (phase === 'learn' && currentIndex > 0) showLearnWord(currentIndex - 1);
+      if (phase === 'learn') showLearnWord(currentIndex - 1);
     });
     $('sound-icon-btn').addEventListener('click', () => {
       const audio = $('audio-player');
       if (audio && audio.src) audio.play().catch(() => {});
     });
-
-    showLearnWord(0);
   });
 }
 
