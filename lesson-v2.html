@@ -74,15 +74,17 @@
   <audio id="audio-player"></audio>
   <div id="phase-badge"></div>
 
-  <!-- Improved QuizEngine with nextQuestion() -->
+  <!-- Full QuizEngine stub with answer tracking -->
   <script>
     window.QuizEngine = class {
       constructor(questions) {
         this.questions = questions || [];
         this.currentIndex = 0;
+        this.answers = [];
       }
       start() {
         this.currentIndex = 0;
+        this.answers = [];
         return this.questions;
       }
       getCurrentQuestion() {
@@ -97,12 +99,20 @@
       }
       checkAnswer(answer) {
         const q = this.getCurrentQuestion();
-        return q && q.correct === answer;
+        const isCorrect = q && q.correct === answer;
+        this.answers.push({ question: q, answer, correct: isCorrect });
+        return isCorrect;
       }
       isComplete() {
         return this.currentIndex >= this.questions.length;
       }
+      getAllAnswers() {
+        return this.answers;
+      }
     };
+
+    // Also expose allAnswers globally for showCongrats
+    window.allAnswers = [];
   </script>
 
   <script src="js/slide-v2.js"></script>
